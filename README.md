@@ -5,8 +5,11 @@ Extract data from all types of Australian driving licenses and Australian and in
 ## Set Up
 
 Flask - venv setup  
-start by downloading the venv:
+start by downloading the venv as well as getting the same dependencies:
+
     python3 -m venv venv
+    pip install -r requirements.txt 
+
 For activating the virtual environment
     window users:
         
@@ -20,3 +23,10 @@ once in the virtual environment, download flask
     
     pip install flask
 
+To run the flask app :
+
+    flask run
+
+Finally to deactivate :
+
+    deactivate
