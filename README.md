@@ -30,3 +30,4 @@ To run the flask app :
 Finally to deactivate :
 
     deactivate
+
