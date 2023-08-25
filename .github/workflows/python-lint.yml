@@ -1,0 +1,20 @@
+name: "Python Linter"
+
+on:
+  pull_request:
+    types: ["opened", "synchronize", "reopened", "edited"]
+  release:
+    types: published
+  workflow_dispatch:
+
+jobs:
+  python-linter:
+    name: Python Linter
+    steps:
+      - uses: actions/checkout@v2
+      - name: Python Linter
+        uses: sunnysid3up/python-linter@master
+        with:
+          source: "/"
+          strict: "medium"
+          django: false
