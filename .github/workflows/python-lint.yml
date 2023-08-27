@@ -16,6 +16,6 @@ jobs:
       - name: Python Linter
         uses: sunnysid3up/python-linter@master
         with:
-          source: "."
+          source: "src"
           strict: "medium"
           django: false
