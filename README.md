@@ -22,6 +22,7 @@ For activating the virtual environment
 once in the virtual environment, download flask 
     
     pip install flask
+    pip install python-dotenv (this is for reading the .flaskenv file)
 
 To run the flask app :
 
