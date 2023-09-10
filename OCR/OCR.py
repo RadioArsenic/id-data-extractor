@@ -1,18 +1,37 @@
 import pytesseract
-import PIL
 import cv2
 import numpy as np
-import re
 
 
 def imageToText(image_path):
-    image = cv2.imread(image_path)
-    image = cv2.resize(image,None, fx=3, fy=2, interpolation=cv2.INTER_CUBIC)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = cv2.threshold(image, 90, 255, cv2.THRESH_BINARY)[1]
-    image = cv2.medianBlur(image, 7)
-    text = pytesseract.image_to_string(image, config = '--psm 6 --oem 3', lang='eng')
-    return text
+    # Load the image
+    image = cv2.imread('WA-driver-license.jpeg')
+
+    # Resize image
+    image = cv2.resize(image,(620,413), interpolation=cv2.INTER_CUBIC)
+
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Threshold the image to convert non-black areas to white
+    _, thresholded = cv2.threshold(gray, 130, 255, cv2.THRESH_BINARY)
+
+    # Create an all-white image of the same size as the original image
+    result = np.ones_like(image) * 255
+
+    # Copy the black areas from the original image to the result
+    result[thresholded == 0] = image[thresholded == 0]
+
+    # Save or display the resulting image
+    cv2.imwrite('result_image.jpg', result)
+
+    # Display the result (optional)
+    cv2.imshow('Result Image', result)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    # Extract text from image
+    text = pytesseract.image_to_string(result, config = '--psm 6 --oem 3', lang='eng')
 
 print(imageToText("WA-driver-license.jpeg"))
 print("---------------------------------------")
