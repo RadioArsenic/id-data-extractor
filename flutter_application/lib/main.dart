@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
+import 'dart:io';
 
 import 'camera_screen.dart';
 
+//late - variables are value is assigned l
 late List<CameraDescription> cameras;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
@@ -26,6 +29,8 @@ class MyApp extends StatelessWidget {
 }
 
 String stringResponse = "";
+// currently a url to api for random user generator
+const apiURL = "http://10.0.2.2:5000/api?query=2";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -34,13 +39,14 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
+// code for the homescreen of the app
 class _HomeScreenState extends State<HomeScreen> {
+  // camera variable
   late CameraController _controller;
 
   Future apicall() async {
     http.Response response;
-    // http://10.0.2.2:5000/api?query=2
-    response = await http.get(Uri.parse("https://reqres.in/api/users?page=2"));
+    response = await http.get(Uri.parse(apiURL));
     if (response.statusCode == 200) {
       setState(() {
         stringResponse = response.body;
@@ -53,6 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
     apicall();
     super.initState();
     _controller = CameraController(cameras[0], ResolutionPreset.max);
+    
+    // initialize the first available camera
     _controller.initialize().then((_) {
       if (!mounted) {
         return;
@@ -75,63 +83,87 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //text and bars of the app (decorations)
       appBar: AppBar(title: Text("OCR program")),
-      body:
-          Stack(
-            children: [
-              Container(
-                  height: double.infinity,
-                  child: CameraPreview(_controller),
-                ),
-              Center(
-                child:
-                  Container(
-                    height: 200,
+      body: Stack(
+        children: [
+          SizedBox(
+            height: double.infinity,
+            child: CameraPreview(_controller),
+          ),
+          Center(
+            child: Container(
+                height: 200,
                 width: 300,
                 decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white),
-                    ),
-                child: Center(
-                  // child: Text(stringResponse.toString()),
-                )),
+                  // the white box for the card outline
+                  border: Border.all(color: Colors.white),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: MaterialButton(onPressed: () async {
-                          if (!_controller.value.isInitialized) {
-                            return null;
-                          }
-                          if (_controller.value.isTakingPicture) {
-                            return null;
-                          }
+                child: Center(
+                    child: Text(stringResponse.toString()),
+                )),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Container(
+                  // adding a margin
+                  margin: const EdgeInsets.all(20.0),
+                  child: MaterialButton(
+                    onPressed: () async {
+                      if (!_controller.value.isInitialized) {
+                        return;
+                      }
+                      if (_controller.value.isTakingPicture) {
+                        return;
+                      }
 
-                          try {
-                            await _controller.setFlashMode(FlashMode.auto);
-                            XFile file = await _controller.takePicture();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ImagePreview(file)));
-                          } on CameraException catch (e) {
-                            debugPrint("Error occured while taking picture: $e");
-                            return null;
-                          }
-                        },
-                        color: Colors.white,
-                        child:Text("Take a picture"),
-                        ),
-                      ),
-                    )
-                  ],
-                )
-                
-              ],
-            ),
+                      try {
+                        await _controller.setFlashMode(FlashMode.auto);
+                        XFile file = await _controller.takePicture();
+  
+                        // Uploading the image to the api
+                        await uploadImage(File(file.path));
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImagePreview(file),
+                          ),
+                        );
+                      } on CameraException catch (e) {
+                        debugPrint("Error occurred while taking picture: $e");
+                        return null;
+                      }
+                    },
+                    color: Colors.white,
+                    child: const Text("Take a picture"),
+                  ),
+                ),
+              )
+            ],
+          )
+        ],
+      ),
     );
+  }
+}
+
+Future<void> uploadImage(File imageFile) async {
+  // The URL for the image upload, here this was the local flask app used
+  var uri = Uri.parse("http://10.0.2.2:5000/upload");
+
+  //usage of mulipart to transfer the image data
+  var request = http.MultipartRequest('POST', uri)
+    ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+
+  var response = await request.send();
+  
+  if (response.statusCode == 200) {
+    print('Image uploaded!');
+  } else {
+    print('Image upload failed.');
   }
 }
