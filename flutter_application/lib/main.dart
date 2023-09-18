@@ -44,11 +44,13 @@ class _HomeScreenState extends State<HomeScreen> {
   // camera variable
   late CameraController _controller;
 
+  //api call function
   Future apicall() async {
     http.Response response;
     response = await http.get(Uri.parse(apiURL));
     if (response.statusCode == 200) {
       setState(() {
+        //setting the response of the apicall to stringResponse
         stringResponse = response.body;
       });
     }
@@ -67,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       setState(() {});
     }).catchError((Object e) {
+      //checking for camera access error
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenited':
@@ -99,11 +102,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   // the white box for the card outline
                   border: Border.all(color: Colors.white),
                 ),
-                child: Center(
-                    child: Text(stringResponse.toString()),
-                )),
+                // displays response of above api call "apiURL" variable 
+                // child: Center(
+                //     child: Text(stringResponse.toString()),
+                // )
+              ),
           ),
           Column(
+            // aligning of the page content
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -113,20 +119,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: const EdgeInsets.all(20.0),
                   child: MaterialButton(
                     onPressed: () async {
+                      // camera controller check for whether it is running
                       if (!_controller.value.isInitialized) {
                         return;
                       }
+                      // checking if currently taking a picture already
                       if (_controller.value.isTakingPicture) {
                         return;
                       }
 
                       try {
+                        // attempts to set Flash mode of camera to auto
                         await _controller.setFlashMode(FlashMode.auto);
+
+                        // the taking of a picture
                         XFile file = await _controller.takePicture();
   
                         // Uploading the image to the api
                         await uploadImage(File(file.path));
 
+                        //changes to a image view mode
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -160,7 +172,7 @@ Future<void> uploadImage(File imageFile) async {
     ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
   var response = await request.send();
-  
+  // messages of success/failure of request
   if (response.statusCode == 200) {
     print('Image uploaded!');
   } else {

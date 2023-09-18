@@ -12,8 +12,8 @@ start by creating the venv as well as getting the same dependencies:
 
 For activating the virtual environment
     window users:
-        
-        venv\Scripts\activate
+        Set-ExecutionPolicy Unrestricted -Scope Process
+        venv\bin\activate
 
     linux / mac:
 
