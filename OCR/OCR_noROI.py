@@ -14,7 +14,7 @@ def imageToText(image_path):
     image = cv2.imread(image_path)
 
     # Resize image
-    # image = cv2.resize(image, (620, 413), interpolation=cv2.INTER_CUBIC)
+    image = cv2.resize(image, (620, 413), interpolation=cv2.INTER_CUBIC)
 
     # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -62,9 +62,9 @@ def imageToText(image_path):
 #       QLD, we need a better sample for this one
 #       TAS, we need a better sample for this one
 
-# print(imageToText("ACT-driver-license.jpeg"))
+print(imageToText("ACT-driver-license.jpeg"))
 # print(imageToText("NSW-driver-license.jpg"))
-print(imageToText("NT-driver-license.png"))
+# print(imageToText("NT-driver-license.png"))
 # print(imageToText("Queensland-driver-license.jpeg"))
 # print(imageToText("SA-driver-license.jpg"))
 # print(imageToText("Tasmania-driver-license.jpeg"))
