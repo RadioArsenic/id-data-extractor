@@ -79,7 +79,7 @@ def extract_information(image_path):
     resized_image = cv2.resize(image,(620,413), interpolation=cv2.INTER_CUBIC)
     displayImage(resized_image)
 
-    for key, roi in ImageConstantROI.CCCD.NT_ROIS.items():l
+    for key, roi in ImageConstantROI.CCCD.NT_ROIS.items():
         data = ''
         for r in roi:
             crop_img = cropImageRoi(resized_image, r)
