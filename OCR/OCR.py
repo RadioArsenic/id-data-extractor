@@ -6,8 +6,7 @@ import json
 class ImageConstantROI():
     class CCCD(object):
         WA_ROIS = {
-            "last_name": [(19, 158, 120, 20)],
-            "given_name": [(45, 176, 155, 20)],
+            "name": [(45, 176, 155, 20), (19, 158, 120, 20)],
             "address": [(19, 194, 300, 40)],
             "expiry_date": [(19, 257, 140, 30)],
             "date_of_birth": [(200, 257, 140, 30)],
@@ -70,24 +69,30 @@ def displayImage(image):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# Load the image
-image = cv2.imread('NT-driver-license.png')
+def extract_information(image_path):
+    information = {}
 
-# Resize Image
-resized_image = cv2.resize(image,(620,413), interpolation=cv2.INTER_CUBIC)
-displayImage(resized_image)
+    # Load the image
+    image = cv2.imread(image_path)
 
-for key, roi in ImageConstantROI.CCCD.NT_ROIS.items():
-    data = ''
-    for r in roi:
-        crop_img = cropImageRoi(resized_image, r)
+    # Resize Image
+    resized_image = cv2.resize(image,(620,413), interpolation=cv2.INTER_CUBIC)
+    displayImage(resized_image)
+
+    for key, roi in ImageConstantROI.CCCD.NT_ROIS.items():l
+        data = ''
+        for r in roi:
+            crop_img = cropImageRoi(resized_image, r)
+            displayImage(crop_img)
+            crop_img = preprocessing(crop_img)
+            data += pytesseract.image_to_string(crop_img, config = '--psm 6 --oem 3', lang='eng').replace('\n', ' ') + ' '
         displayImage(crop_img)
-        crop_img = preprocessing(crop_img)
-        data += pytesseract.image_to_string(crop_img, config = '--psm 6 --oem 3', lang='eng').replace('\n', ' ') + ' '
-    displayImage(crop_img)
-    print(f"{key} : {data.strip('')}")
+        information[key] = data.strip('')
+        print(f"{key} : {data.strip('')}")
 
+    return information
 
+extract_information("WA-driver-license.jpeg")
 # works fine:
 #       ACT, has a couple of missteps where the photo is pixelated
 #       SA, all the important info is there, fewer random characters
@@ -107,7 +112,7 @@ for key, roi in ImageConstantROI.CCCD.NT_ROIS.items():
 # print(imageToText("SA-driver-license.jpg"))
 # print(imageToText("Tasmania-driver-license.jpeg"))
 # print(imageToText("Victoria-driver-license.jpg"))
-print(imageToText("WA-driver-license.jpeg"))
+#print(imageToText("WA-driver-license.jpeg"))
 
 
 # * INFO WANTED:
