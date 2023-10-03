@@ -93,6 +93,7 @@ def extract_information(image_path):
     return information
 
 extract_information("WA-driver-license.jpeg")
+
 # works fine:
 #       ACT, has a couple of missteps where the photo is pixelated
 #       SA, all the important info is there, fewer random characters
