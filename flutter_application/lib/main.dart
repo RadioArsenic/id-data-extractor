@@ -1,9 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'dart:io';
-
-import 'camera_screen.dart';
 
 //late - variables are value is assigned l
 late List<CameraDescription> cameras;
@@ -28,9 +28,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
-String stringResponse = "";
+var stringResponse;
 // currently a url to api for random user generator
-const apiURL = "http://10.0.2.2:5000/api?query=2";
+// const apiURL = "http://10.0.2.2:5000/api?query=2";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -45,23 +45,23 @@ class _HomeScreenState extends State<HomeScreen> {
   late CameraController _controller;
 
   //api call function
-  Future apicall() async {
-    http.Response response;
-    response = await http.get(Uri.parse(apiURL));
-    if (response.statusCode == 200) {
-      setState(() {
-        //setting the response of the apicall to stringResponse
-        stringResponse = response.body;
-      });
-    }
-  }
+  // Future apicall() async {
+  //   http.Response response;
+  //   response = await http.get(Uri.parse(apiURL));
+  //   if (response.statusCode == 200) {
+  //     setState(() {
+  //       //setting the response of the apicall to stringResponse
+  //       stringResponse = response.body;
+  //     });
+  //   }
+  // }
 
   @override
   void initState() {
-    apicall();
+    // apicall();
     super.initState();
     _controller = CameraController(cameras[0], ResolutionPreset.max);
-    
+
     // initialize the first available camera
     _controller.initialize().then((_) {
       if (!mounted) {
@@ -96,17 +96,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Center(
             child: Container(
-                height: 200,
-                width: 300,
-                decoration: BoxDecoration(
-                  // the white box for the card outline
-                  border: Border.all(color: Colors.white),
-                ),
-                // displays response of above api call "apiURL" variable 
-                // child: Center(
-                //     child: Text(stringResponse.toString()),
-                // )
+              height: 200,
+              width: 300,
+              decoration: BoxDecoration(
+                // the white box for the card outline
+                border: Border.all(color: Colors.white),
               ),
+              // displays response of above api call "apiURL" variable
+              // child: Center(
+              //     child: Text(stringResponse.toString()),
+              // )
+            ),
           ),
           Column(
             // aligning of the page content
@@ -129,12 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
 
                       try {
-                        // attempts to set Flash mode of camera to auto
-                        await _controller.setFlashMode(FlashMode.auto);
-
                         // the taking of a picture
                         XFile file = await _controller.takePicture();
-  
+
                         // Uploading the image to the api
                         await uploadImage(File(file.path));
 
@@ -169,13 +166,61 @@ Future<void> uploadImage(File imageFile) async {
 
   //usage of mulipart to transfer the image data
   var request = http.MultipartRequest('POST', uri)
+    ..headers['x-api-key'] = 'JPkxhc9cGFv35OWu267fsx8R6uZj29GL'
     ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
-  var response = await request.send();
+  var streamedResponse = await request.send();
+  var response= await http.Response.fromStream(streamedResponse);
+  stringResponse = jsonDecode(response.body) as Map<String, dynamic>;
+
   // messages of success/failure of request
   if (response.statusCode == 200) {
-    print('Image uploaded!');
+    print('Successfully sent!');
   } else {
-    print('Image upload failed.');
+    print('error!');
+  }
+  
+}
+
+//image viewing page of the app, app redirects to here once image taken
+class ImagePreview extends StatefulWidget {
+  ImagePreview(this.file, {super.key});
+
+  // XFile contains the path property to the image
+  XFile file;
+  Map<String, dynamic>? jsonData;
+
+  @override
+  State<ImagePreview> createState() => _ImagePreviewState();
+}
+
+class _ImagePreviewState extends State<ImagePreview> {
+  @override
+  Widget build(BuildContext context) {
+    // retreving of image
+    File picture = File(widget.file.path);
+    return Scaffold(
+      // "Image Preview" at the top
+      appBar: AppBar(title: Text("Retake photo")),
+      body: Center(
+          // displaying of image taken
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          
+          // Checking if response is null before trying to access its properties
+          if (stringResponse != Null)
+            Column(
+            children: stringResponse!.entries
+                    .map<Widget>(
+                      (entry) => Text('${entry.key}: ${entry.value}'),
+                    )
+                    .toList(),
+          ),
+          
+          
+        ],
+      )),
+    );
   }
 }

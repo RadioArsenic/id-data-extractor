@@ -25,7 +25,24 @@ class _ImagePreviewState extends State<ImagePreview> {
         appBar: AppBar(title: Text("Image Preview")),
         body: Center(
           // displaying of image taken
-          child: Image.file(picture),
-        ));
+          child:Column(
+            children: <Widget>[
+              Image.file(picture), // Checking if jsonData is null before trying to access its properties
+              // Checking if jsonData is null before trying to access its properties
+
+              Column(
+                children: [
+                  Text('Name:'),
+                  Text('Age: '),
+                  // Add more Text widgets here to display additional JSON data
+                ],
+              ),
+          ],
+
+              
+          ) 
+        ), 
+
+        );
   }
 }
