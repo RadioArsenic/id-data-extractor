@@ -2,12 +2,8 @@ import pytesseract
 import cv2
 import numpy as np
 import json
-# import lexnlp.extract.en.dates as dates
-# from lexnlp.extract.en.addresses import address_features
-# import lexnlp.extract.en.addresses as address
-# import lexnlp.extract.en.entities.stanford_ner as stanford_ner
-# import lexnlp.extract.en.entities.nltk_maxent.py as nltk 
-import lexnlp.extract.en.addresses.addresses as addressFinder
+import re
+import lexnlp.extract.en.dates as dates
 
 def imageToText(image_path):
     # Load the image
@@ -47,6 +43,12 @@ def imageToText(image_path):
 
     # Extract text from image
     text = pytesseract.image_to_string(result, config="--psm 6 --oem 3", lang="eng")
+    
+    # Clean output
+    print(text, "\n ~~~~~~~~~")
+    text = re.sub('[^ \na-zA-Z\d\'\/-]*', '', text)
+    text = re.sub('\n', ' ', text)
+    
     return text
 
 
@@ -62,14 +64,14 @@ def imageToText(image_path):
 #       QLD, we need a better sample for this one
 #       TAS, we need a better sample for this one
 
-print(imageToText("ACT-driver-license.jpeg"))
-# print(imageToText("NSW-driver-license.jpg"))
-# print(imageToText("NT-driver-license.png"))
-# print(imageToText("Queensland-driver-license.jpeg"))
-# print(imageToText("SA-driver-license.jpg"))
-# print(imageToText("Tasmania-driver-license.jpeg"))
-# print(imageToText("Victoria-driver-license.jpg"))
-# print(imageToText("WA-driver-license.jpeg"))
+# print(imageToText("ACT-driver-license.jpeg"))             dates are good, it should read the address but doesn't (maybe thinks multiple and overwrites?)              look into
+# print(imageToText("NSW-driver-license.jpg"))              dates are back to back and have couple random characters, address is jumbled in OCR
+# print(imageToText("NT-driver-license.png"))               dates are removed in OCR, address is jumbled in OCR
+# print(imageToText("Queensland-driver-license.jpeg"))      dates are jumped in OCR, doesn't have an address on license 
+# print(imageToText("SA-driver-license.jpg"))               dates are good, address has a couple random characters so doesn't pick up
+# print(imageToText("Tasmania-driver-license.jpeg"))        everything is jumbled 
+# print(imageToText("Victoria-driver-license.jpg"))         #dates are back to back, address has a couple random characters so doesn't pick up
+# print(imageToText("WA-driver-license.jpeg"))              #dates are back to back, address is jumbled in OCR
 
 
 # * INFO WANTED:
@@ -81,23 +83,16 @@ print(imageToText("ACT-driver-license.jpeg"))
 # Expiry date (for verification)
 
 # convert string to python dictionary then to json
+# returns json if fine, otherwise gives error
 def parsetoJSON(text):
     pass
 
 
-# text = imageToText("WA-driver-license.jpeg")
-# print(text)
-# print("----")
 # print(list(dates.get_dates(text)))
-# print(list(lexnlp.extract.en.addresses.address_features.get_word_features(text)))
-# print(list(address_features.get_word_features(text, is_zip_code(text))))
-# print(list(addresses.get_addresses(text)))
-# print(list(stanford_ner.get_locations(text)))
-# print("----")
-# print(list(stanford_ner.get_persons(text)))
-# print(list(nltk.get_geopolitical(text)))
-# print(list(nltk.get_persons(text)))
 
+#https://www.parcelforce.com/help-and-advice/sending/address-formats-world
 
-# text = "The company is located at 123 Main Street, New York, NY 10001."
-# print(list(addressFinder.get_addresses(text)))
+regexp = r"\d{1,4}(?:\s+[A-Za-z]+){3,}\s+\d{4,5}"
+address = re.findall(regexp, text)
+print(address)
+
