@@ -13,6 +13,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 VALID_API_KEYS = ["JPkxhc9cGFv35OWu267fsx8R6uZj29GL"]
 
 # Security check for user whether contain api key
+
+
 @app.before_request
 def check_api_key():
     api_key = request.headers.get('x-api-key')
@@ -25,6 +27,8 @@ def index():
     return "Hello World, flask!"
 
 # function for testing api call, this api call returns the ascii of a character
+
+
 @app.route("/api", methods=['GET'])
 def return_ascii():
     dictionary = {}
@@ -33,7 +37,8 @@ def return_ascii():
     dictionary['output'] = answer
     return jsonify(dictionary)
 
-#checks to see whether the folder to contain file exists
+
+# checks to see whether the folder to contain file exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -63,7 +68,6 @@ def upload_image():
                         'name': "John Doe",
                         'birthdate': "23MAY1999",
                         'address': "13 CHALLIS ST DICKSON ACT 2602"}), 200
-        # example json of data {'name': "John Doe", 'birthdate': "23MAY1999", 'address': "13 CHALLIS ST DICKSON ACT 2602"}
     return jsonify({'error': 'File type not allowed.'}), 400
 
 
