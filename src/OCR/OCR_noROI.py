@@ -92,9 +92,9 @@ def parsetoJSON(text):
     pass
 
 
-text = imageToText("Victoria-driver-license.jpg")
-
 # print(list(dates.get_dates(text)))
-regexp = r"\d{1,4}(?:\s+[A-Za-z]+){3,}\s+\d{4,5}"
-address = re.findall(regexp, text)
-print(address)
+def address_detection(text):
+    regexp = r"\d{1,4}(?:\s+[A-Za-z]+){3,}\s+\d{4,5}"
+    address = re.findall(regexp, text)
+    print(address)
+    return address
