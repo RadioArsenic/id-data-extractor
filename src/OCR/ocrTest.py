@@ -7,9 +7,9 @@ import re
 
 
 # path of the image
-image_path = 'WA-driver-license.jpeg'
+image_path = "WA-driver-license.jpeg"
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # open image
 image = Image.open(image_path)
@@ -19,6 +19,7 @@ desired_height = 800
 aspect_ratio = float(desired_height) / image.height
 new_width = int(image.width * aspect_ratio)
 resized_image = image.resize((new_width, desired_height))
+
 
 # OCR recognition using Tesseract
 def ocr_license(resized_image):
@@ -30,10 +31,10 @@ def ocr_license(resized_image):
         blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
 
         # Text recognition using Tesseract
-        text = pytesseract.image_to_string(Image.fromarray(blurred_image), lang='eng')
+        text = pytesseract.image_to_string(Image.fromarray(blurred_image), lang="eng")
 
         # Split text by newlines
-        lines = text.split('\n')
+        lines = text.split("\n")
 
         # Remove blank lines
         lines = [line.strip() for line in lines if line.strip()]
@@ -43,7 +44,7 @@ def ocr_license(resized_image):
             raise Exception("Not enough lines of text recognized")
 
         # Extract driver's license number, surname, first name, address, birthday and driver's license expiration date
-        license_number_match = re.search(r'\d{5,}', text)
+        license_number_match = re.search(r"\d{5,}", text)
         if license_number_match:
             license_number = license_number_match.group()
         else:
@@ -51,7 +52,7 @@ def ocr_license(resized_image):
 
         last_name = lines[6]
         first_name = lines[7]
-        address = lines[8] + ' ' + lines[9]  # Merge the text of lines 8 and 9
+        address = lines[8] + " " + lines[9]  # Merge the text of lines 8 and 9
         birthday = " ".join(lines[11].split()[-3:])
         expiration_date = " ".join(lines[11].split()[:3])
 
@@ -62,13 +63,14 @@ def ocr_license(resized_image):
             "first_name": first_name,
             "address": address,
             "birthday": birthday,
-            "expiration_date": expiration_date
+            "expiration_date": expiration_date,
         }
 
         return json.dumps(result, indent=4)
     except Exception as e:
         print(f"error: {str(e)}")
         return None
+
 
 # Call the OCR function and print the JSON result
 result = ocr_license(resized_image)

@@ -5,6 +5,7 @@ import json
 import re
 import lexnlp.extract.en.dates as dates
 
+
 def imageToText(image_path):
     # Load the image
     image = cv2.imread(image_path)
@@ -16,12 +17,12 @@ def imageToText(image_path):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.multiply(gray, 1.5)
 
-    #blur remove noise
-    #blured = cv2.medianBlur(gray,3)
-    blured1 = cv2.medianBlur(gray,3)
-    blured2 = cv2.medianBlur(gray,51)
+    # blur remove noise
+    # blured = cv2.medianBlur(gray,3)
+    blured1 = cv2.medianBlur(gray, 3)
+    blured2 = cv2.medianBlur(gray, 51)
     divided = np.ma.divide(blured1, blured2).data
-    normed = np.uint8(255*divided/divided.max())
+    normed = np.uint8(255 * divided / divided.max())
 
     # Threshold the image to convert non-black areas to white
     # _, thresholded = cv2.threshold(gray, 130, 255, cv2.THRESH_BINARY)
@@ -43,12 +44,12 @@ def imageToText(image_path):
 
     # Extract text from image
     text = pytesseract.image_to_string(result, config="--psm 6 --oem 3", lang="eng")
-    
+
     # Clean output
     print(text, "\n ~~~~~~~~~")
-    text = re.sub('[^ \na-zA-Z\d\'\/-]*', '', text)
-    text = re.sub('\n', ' ', text)
-    
+    text = re.sub("[^ \na-zA-Z\d'\/-]*", "", text)
+    text = re.sub("\n", " ", text)
+
     return text
 
 
@@ -67,10 +68,12 @@ def imageToText(image_path):
 # print(imageToText("ACT-driver-license.jpeg"))             dates are good, it should read the address but doesn't (maybe thinks multiple and overwrites?)              look into
 # print(imageToText("NSW-driver-license.jpg"))              dates are back to back and have couple random characters, address is jumbled in OCR
 # print(imageToText("NT-driver-license.png"))               dates are removed in OCR, address is jumbled in OCR
-# print(imageToText("Queensland-driver-license.jpeg"))      dates are jumped in OCR, doesn't have an address on license 
+# print(imageToText("Queensland-driver-license.jpeg"))      dates are jumped in OCR, doesn't have an address on license
 # print(imageToText("SA-driver-license.jpg"))               dates are good, address has a couple random characters so doesn't pick up
-# print(imageToText("Tasmania-driver-license.jpeg"))        everything is jumbled 
-# print(imageToText("Victoria-driver-license.jpg"))         #dates are back to back, address has a couple random characters so doesn't pick up
+# print(imageToText("Tasmania-driver-license.jpeg"))        everything is jumbled
+# print(
+#     imageToText("Victoria-driver-license.jpg")
+# )  # dates are back to back, address has a couple random characters so doesn't pick up
 # print(imageToText("WA-driver-license.jpeg"))              #dates are back to back, address is jumbled in OCR
 
 
@@ -82,17 +85,16 @@ def imageToText(image_path):
 # Address
 # Expiry date (for verification)
 
+
 # convert string to python dictionary then to json
 # returns json if fine, otherwise gives error
 def parsetoJSON(text):
     pass
 
 
+text = imageToText("Victoria-driver-license.jpg")
+
 # print(list(dates.get_dates(text)))
-
-#https://www.parcelforce.com/help-and-advice/sending/address-formats-world
-
 regexp = r"\d{1,4}(?:\s+[A-Za-z]+){3,}\s+\d{4,5}"
 address = re.findall(regexp, text)
 print(address)
-
