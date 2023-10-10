@@ -7,7 +7,7 @@ import lexnlp.extract.en.dates as dates
 import re
 
 
-def imageToText(image_path):
+def image_to_text(image_path):
     # Load the image
     image = cv2.imread(image_path)
 
@@ -89,7 +89,7 @@ def imageToText(image_path):
 
 # convert string to python dictionary then to json
 # returns json if fine, otherwise gives error
-def parsetoJSON(text):
+def parse_to_json(text):
     pass
 
 
