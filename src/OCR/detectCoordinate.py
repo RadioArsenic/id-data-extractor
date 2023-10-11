@@ -1,7 +1,7 @@
 import cv2
 
 # Load the image
-image = cv2.imread('WA-driver-license.jpeg')
+image = cv2.imread('./test_images/WA-driver-license.jpeg')
 image = cv2.resize(image,(620,413), interpolation=cv2.INTER_CUBIC)
 
 # Callback function for mouse click

@@ -1,15 +1,15 @@
-import pytesseract
 import cv2
 import numpy as np
+import pytesseract
 import json
 
 class ImageConstantROI():
     class CCCD(object):
         WA_ROIS = {
-            "name": [(45, 176, 155, 20), (19, 158, 120, 20)],
-            "address": [(19, 194, 300, 40)],
-            "expiry_date": [(19, 257, 140, 30)],
-            "date_of_birth": [(200, 257, 140, 30)],
+            "name": [(45, 180, 155, 20), (19, 160, 120, 20)],
+            "address": [(17, 199, 300, 40)],
+            "expiry_date": [(17, 270, 140, 26)],
+            "date_of_birth": [(200, 270, 140, 26)],
         }
         Victoria_ROIS = {
             "name": [(14, 79, 350, 30)],
@@ -24,11 +24,22 @@ class ImageConstantROI():
             "date_of_birth": [(280, 374, 150, 20)]
         }
         NT_ROIS = {
-            "last_name": [(195, 145, 200, 25)],
-            "given_name": [(195, 168, 200, 25)],
+            "name": [(195, 168, 200, 25), (195, 145, 200, 25)],
             "address": [(195, 280, 200, 50)],
             "expiry_date": [(490, 371, 90, 20)],
             "date_of_birth": [(350, 371, 90, 20)],
+        }
+        ACT_ROIS = {
+            "name": [(16, 100, 250, 30)],
+            "address": [(16, 126, 250, 60)],
+            "expiry_date": [(252, 246, 130, 30)],
+            "date_of_birth": [(115, 212, 140, 30)],
+        }
+        SA_ROIS = {
+            "name": [(37, 209, 250, 25)],
+            "address": [(16, 234, 250, 50)],
+            "expiry_date": [(335, 100, 105, 30)],
+            "date_of_birth": [(181, 100, 105, 30)],
         }
         
 
@@ -36,6 +47,30 @@ def cropImageRoi(image, roi):
     roi_cropped = image[
         int(roi[1]) : int(roi[1] + roi[3]), int(roi[0]) : int(roi[0] + roi[2])]
     return roi_cropped
+
+def cropImage(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Apply edge detection to find the contour of the ID card
+    edges = cv2.Canny(gray, threshold1=30, threshold2=100)
+
+    # Find the contours in the image
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Find the largest contour (assuming it's the ID card)
+    largest_contour = max(contours, key=cv2.contourArea)
+
+    # Create a mask for the ID card using the largest contour
+    mask = np.zeros_like(image)
+    cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), thickness=cv2.FILLED)
+
+    # Apply the mask to the original image to extract the ID card
+    result = cv2.bitwise_and(image, mask)
+
+    # Save the cropped ID card as a new image
+    cv2.imwrite('cropped_id_card.jpg', result)
+
+    return result
 
 def preprocessing(image):
     # Convert the image to grayscale
@@ -79,20 +114,20 @@ def extract_information(image_path):
     resized_image = cv2.resize(image,(620,413), interpolation=cv2.INTER_CUBIC)
     displayImage(resized_image)
 
-    for key, roi in ImageConstantROI.CCCD.NT_ROIS.items():
+    for key, roi in ImageConstantROI.CCCD.WA_ROIS.items():
         data = ''
         for r in roi:
             crop_img = cropImageRoi(resized_image, r)
-            displayImage(crop_img)
+            #displayImage(crop_img)
             crop_img = preprocessing(crop_img)
-            data += pytesseract.image_to_string(crop_img, config = '--psm 6 --oem 3', lang='eng').replace('\n', ' ') + ' '
+            data += pytesseract.image_to_string(crop_img, config = '--psm 6 --oem 3', lang='eng').replace('\n', ' ').strip() + ' '
         displayImage(crop_img)
-        information[key] = data.strip('')
-        print(f"{key} : {data.strip('')}")
+        information[key] = data.strip()
+        #print(f"{key} : {data.strip()}")
 
     return information
 
-extract_information("WA-driver-license.jpeg")
+print(extract_information("./test_images/WA-driver-license.jpeg"))
 
 # works fine:
 #       ACT, has a couple of missteps where the photo is pixelated
