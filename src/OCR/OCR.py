@@ -30,6 +30,7 @@ class ImageConstantROI:
             "expiry_date": [(490, 371, 90, 20)],
             "date_of_birth": [(350, 371, 90, 20)],
         }
+        # need name roi (last is before first)
         AUSTRALIA_ACT = {
             "name": [(16, 100, 250, 30)],
             "address": [(16, 126, 250, 60)],
@@ -147,34 +148,24 @@ def extract_information(image_path, location):
     return information
 
 
-print(extract_information("./test_images/WA-driver-license.jpeg", "AUSTRALIA_WA"))
+# fine
+# print(extract_information("./test_images/WA-driver-license.jpeg", "AUSTRALIA_WA"))
+# print(extract_information("./test_images/NSW-driver-license.jpg", "AUSTRALIA_NSW"))
+# print(extract_information("./test_images/ACT-driver-license.png", "AUSTRALIA_ACT"))
+# print(extract_information("./test_images/QLD-driver-license.jpg", "AUSTRALIA_QLD"))
 
-# works fine:
-#       ACT, has a couple of missteps where the photo is pixelated
-#       SA, all the important info is there, fewer random characters
-#       VIC, borders iffy but mostly alright, not many extra characters and all important is there
-# iffy:
-#       WA, doesn't read state, not necessary for KYC, could be an issue for verification
-#       NSW, messes up the address but otherwise mostly fine
-# doesn't work:
-#       NT, a lot of the info is there but more of it isn't
-#       QLD, we need a better sample for this one
-#       TAS, we need a better sample for this one
+# VIC: reads "SAMPLE" as "SAMPLF"
+# print(extract_information("./test_images/VIC-driver-license.jpg", "AUSTRALIA_VIC"))
 
-# print(imageToText("ACT-driver-license.jpeg"))
-# print(imageToText("NSW-driver-license.jpg"))
-# print(imageToText("NT-driver-license.png"))
-# print(imageToText("Queensland-driver-license.jpeg"))
-# print(imageToText("SA-driver-license.jpg"))
-# print(imageToText("Tasmania-driver-license.jpeg"))
-# print(imageToText("Victoria-driver-license.jpg"))
-# print(imageToText("WA-driver-license.jpeg"))
+# NT: "2 SAMPLE ST ROADSAFETY NT 0800" vs "'SSAMOLE ST ROACSAFLTY N7 C8IC", "25/12/1999" vs "25112:1999"
+# print(extract_information("./test_images/NT-driver-license.png", "AUSTRALIA_NT"))
+
+# SA: "1 FIRST ST ADELAIDE 5000" vs "1 FIRST S” ADELAIDE 50C0", "13/09/2014" vs "43709/2014", "14/09/1995" vs "14:99;1995"
+# print(extract_information("./test_images/SA-driver-license.png", "AUSTRALIA_SA"))
 
 
 # * INFO WANTED:
-# Given name
-# Middle name
-# Family name
+# name
 # DOB
 # Address
 # Expiry date (for verification)
