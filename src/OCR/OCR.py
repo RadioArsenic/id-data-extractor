@@ -41,6 +41,17 @@ class ImageConstantROI():
             "expiry_date": [(335, 100, 105, 30)],
             "date_of_birth": [(181, 100, 105, 30)],
         }
+        Queensland_ROIS = {
+            "name": [(15, 86, 200, 25), (15, 62, 200, 25)],
+            "expiry_date": [(347, 198, 75, 25)],
+            "date_of_birth": [(215, 122, 120, 22)],
+        }
+        ACT_ROIS = {
+            "name": [(11, 97, 250, 30)],
+            "address": [(11, 126, 250, 60)],
+            "expiry_date": [(253, 245, 130, 30)],
+            "date_of_birth": [(115, 213, 140, 30)],
+        }
         
 
 def cropImageRoi(image, roi):
