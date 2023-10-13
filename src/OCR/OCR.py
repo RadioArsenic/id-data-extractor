@@ -136,6 +136,46 @@ def displayImage(image):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+def matchImage(image, baseImage):
+    #Declare image size, width height and chanel
+    baseH, baseW, baseC = baseImage.shape
+    
+    orb = cv2.ORB_create(1000)
+
+    kp, des = orb.detectAndCompute(baseImage, None)
+    
+    PER_MATCH = 0.25
+
+    #Detect keypoint on image
+    kp1, des1 = orb.detectAndCompute(image, None)
+
+    #Init BF Matcher, find the matches points of two images
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING)
+    matches = list(bf.match(des1, des))
+
+    #Select top 30% best matcher 
+    matches.sort(key=lambda x: x.distance)
+    best_matches = matches[:int(len(matches)*PER_MATCH)]
+
+    #Show match img  
+    imgMatch = cv2.drawMatches(image, kp1, baseImage, kp, best_matches,None, flags=2)
+    displayImage(imgMatch)
+
+    #Init source points and destination points for findHomography function.
+    srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1,1,2)
+    dstPoints = np.float32([kp[m.trainIdx].pt for m in best_matches]).reshape(-1,1,2)
+
+
+    #Find Homography of two images
+    matrix_relationship, _ = cv2.findHomography(srcPoints, dstPoints,cv2.RANSAC, 5.0)
+
+    #Transform the image to have the same structure as the base image
+    img_final = cv2.warpPerspective(image, matrix_relationship, (baseW, baseH))
+
+    displayImage(img_final)
+
+    return img_final
+
 
 def extract_information(image_path, location):
     information = {}
@@ -165,7 +205,7 @@ def extract_information(image_path, location):
         information[key] = data.strip()
         # print(f"{key} : {data.strip()}")
 
-        if location == "AUSTRALIA_SA":
+        if location == "AUSTRALIA_SA" or location == "AUSTRALIA_ACT":
             parts = information["name"].split()
             information["name"] = f"{' '.join(parts[1:])} {parts[0]}"
             
