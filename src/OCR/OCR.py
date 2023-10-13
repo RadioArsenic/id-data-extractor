@@ -2,6 +2,9 @@ import cv2
 import numpy as np
 import pytesseract
 import json
+import re
+import imghdr
+import os
 
 # TODO
 """
@@ -19,7 +22,6 @@ fixing roi:
 Cleaning data
     parse dates into same format (' ', '-', '/', '.')
             QLD does diff style to rest again
-    address same format (remove commas)
     name upper vs lower case
 """
 
@@ -208,7 +210,7 @@ def extract_information(image_path, location):
         if location == "AUSTRALIA_SA" or location == "AUSTRALIA_ACT":
             parts = information["name"].split()
             information["name"] = f"{' '.join(parts[1:])} {parts[0]}"
-            
+
     return information
 
 
@@ -227,34 +229,14 @@ def extract_information(image_path, location):
 # SA: "1 FIRST ST ADELAIDE 5000" vs "1 FIRST S” ADELAIDE 50C0", "13/09/2014" vs "43709/2014", "14/09/1995" vs "14:99;1995"
 # print(extract_information("./test_images/SA-driver-license.png", "AUSTRALIA_SA"))
 
-# clean output: text = re.sub("[^ \na-zA-Z\d'\/-]*", "", text)
-
-# * INFO WANTED:
-# name
-# DOB
-# Address
-# Expiry date (for verification)
-
-
-# convert string to python dictionary then to json
-def parsetoJSON(text):
-    pass
-
-
-def address_detection(text):
-    regexp = r"\d{1,4}(?:\s+[A-Za-z]+){3,}\s+\d{4,5}"
-    address = re.findall(regexp, text)
-    print(address)
-    return address
-
 
 def date_builder(day, month, year):
-    """formats the date"""
+    """helper function for date_detection. Formats the date"""
     return f"{day}-{month}-{year}"
 
 
 def month_conversion(month):
-    """converts the month from letter to number format"""
+    """helper function for date_detection. Converts the month from letter to number format"""
     r_month = ""
     month = month.upper()
     month_dict = {
@@ -341,3 +323,51 @@ def validate_dates(dates):
             if year < year_check:
                 birthdate = i
     return birthdate
+
+
+def remove_file(image_path):
+    """removes the file with the given image name.
+    if the file is not an image, or the file does not exist, returns 1
+    otherwise, returns 0"""
+    # if the file doesnt exist, return error
+    if not os.path.exists(image_path):
+        return 1
+
+    # if the file is not an image, return error
+    f_type = imghdr.what(image_path)
+    if not f_type:
+        return 1
+
+    # if the file exists, and is an image, delete it
+    os.remove(image_path)
+    return 0
+
+
+# * INFO WANTED:
+# name
+# address
+# expiry_date
+# date_of_birth
+
+
+def parsetoJSON(information):
+    """Converts python dictionary to json. Returns 0 if error. Input is information from extract_information()"""
+    if "address" in information:
+        information["address"] = re.sub(",", "", information["address"])
+
+    date = date_detection(information["expiry_date"])
+    # ? not sure how the year check bit works?
+    res = validate_dates(date)
+    if res == 0:
+        return 0
+    information["expiry_date"] = "".join(str(x) for x in date)
+
+    date = date_detection(information["date_of_birth"])
+    # ? not sure how the year check bit works?
+    res = validate_dates(date)
+    if res == 0:
+        return 0
+    information["date_of_birth"] = "".join(str(x) for x in date)
+
+    with open("id_data.json", "w", encoding="utf-8") as f:
+        json.dump(information, f, indent=4)
