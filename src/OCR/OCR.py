@@ -52,8 +52,8 @@ class ImageConstantROI:
         }
         # need name roi (last is before first)
         AUSTRALIA_ACT = {
-            "name": [(16, 100, 250, 30)],
-            "address": [(16, 126, 250, 60)],
+            "name": [(11, 97, 250, 30)],
+            "address": [(11, 126, 250, 60)],
             "expiry_date": [(252, 246, 130, 30)],
             "date_of_birth": [(115, 212, 140, 30)],
         }
@@ -165,6 +165,10 @@ def extract_information(image_path, location):
         information[key] = data.strip()
         # print(f"{key} : {data.strip()}")
 
+        if location == "AUSTRALIA_SA":
+            parts = information["name"].split()
+            information["name"] = f"{' '.join(parts[1:])} {parts[0]}"
+            
     return information
 
 
