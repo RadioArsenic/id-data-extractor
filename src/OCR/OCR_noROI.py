@@ -4,7 +4,7 @@ import numpy as np
 import json
 import re
 import lexnlp.extract.en.dates as dates
-import re
+import imghdr
 
 
 def image_to_text(image_path):
@@ -108,7 +108,6 @@ def date_builder(day, month, year):
 
 def month_conversion(month):
     """converts the month from letter to number format"""
-    r_month = ""
     month = month.upper()
     month_dict = {
         "JAN": "01",
@@ -139,7 +138,7 @@ def date_detection(text):
     pattern3 = r"[0-9]{2}-[A-Z]{3}-[0-9]{4}"  # 10-JUN-1990
     pattern4 = r"[0-9]{2}-[0-9]{2}-[0-9]{4}"  # 10-06-1990
     pattern5 = r"[0-9]{2}/[A-Z]{3}/[0-9]{4}"  # 10/JUN/1990
-    pattern6 = r"[0-9]{2}/[0-9]{2}/[0-9]{4}"  # 10/09/1990
+    pattern6 = r"[0-9]{2}/[0-9]{2}/[0-9]{4}"  # 10/06/1990
     pattern8 = r"\b\d{8}\b"  # 8 numbers
 
     # 16 numbers
@@ -194,3 +193,21 @@ def validate_dates(dates):
             if year < year_check:
                 birthdate = i
     return birthdate
+
+
+"""removes the file with the given image name.
+if the file is not an image, or the file does not exist, returns 1
+otherwise, returns 0"""
+def remove_file(image_path):
+    # if the file doesnt exist, return error
+    if not os.path.exists(image_path):
+        return 1
+    
+    # if the file is not an image, return error
+    f_type = imghdr.what(image_path)
+    if not f_type:
+        return 1
+    
+    # if the file exists, and is an image, delete it
+    os.remove(image_path)
+    return 0
