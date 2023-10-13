@@ -195,19 +195,19 @@ def validate_dates(dates):
     return birthdate
 
 
-"""removes the file with the given image name.
-if the file is not an image, or the file does not exist, returns 1
-otherwise, returns 0"""
 def remove_file(image_path):
+    """removes the file with the given image name.
+    if the file is not an image, or the file does not exist, returns 1
+    otherwise, returns 0"""
     # if the file doesnt exist, return error
     if not os.path.exists(image_path):
         return 1
-    
+
     # if the file is not an image, return error
     f_type = imghdr.what(image_path)
     if not f_type:
         return 1
-    
+
     # if the file exists, and is an image, delete it
     os.remove(image_path)
     return 0
