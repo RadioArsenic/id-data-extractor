@@ -79,32 +79,6 @@ def cropImageRoi(image, roi):
     ]
     return roi_cropped
 
-
-def cropImage(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # Apply edge detection to find the contour of the ID card
-    edges = cv2.Canny(gray, threshold1=30, threshold2=100)
-
-    # Find the contours in the image
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    # Find the largest contour (assuming it's the ID card)
-    largest_contour = max(contours, key=cv2.contourArea)
-
-    # Create a mask for the ID card using the largest contour
-    mask = np.zeros_like(image)
-    cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), thickness=cv2.FILLED)
-
-    # Apply the mask to the original image to extract the ID card
-    result = cv2.bitwise_and(image, mask)
-
-    # Save the cropped ID card as a new image
-    cv2.imwrite("cropped_id_card.jpg", result)
-
-    return result
-
-
 def preprocessing(image):
     # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
