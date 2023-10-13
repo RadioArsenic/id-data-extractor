@@ -1,4 +1,5 @@
-import os
+import os, shutil
+from src.OCR import imageToText
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
@@ -13,8 +14,6 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 VALID_API_KEYS = ["JPkxhc9cGFv35OWu267fsx8R6uZj29GL"]
 
 # Security check for user whether contain api key
-
-
 @app.before_request
 def check_api_key():
     api_key = request.headers.get("x-api-key")
@@ -64,20 +63,32 @@ def upload_image():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-        return (
-            jsonify(
-                {
-                    "success": "File uploaded successfully!",
-                    "filename": filename,
-                    "name": "John Doe",
-                    "birthdate": "23MAY1999",
-                    "address": "13 CHALLIS ST DICKSON ACT 2602",
-                }
-            ),
-            200,
-        )
+        filepath = "./uploads/" + filename
+        
+        ###################################################### To be changed with actual OCR code
+        # extractedData = imageToText(filepath)
+        extractedData = "error"
+        # if os.path.isdir("./uploads"):
+        #     shutil.rmtree("./uploads")
+        if extractedData == "error":
+            return jsonify({"error": "improper image please retake"}), 200
+        else:
+            # parseToJson here
+            return (
+                jsonify(
+                    {
+                        "success": "File uploaded successfully!",
+                        "filename": filename,
+                        "name": "John Doe",
+                        "birthdate": "23MAY1999",
+                        "address": "13 CHALLIS ST DICKSON ACT 2602",
+                        "realdata": extractedData,  # needs to be parsed
+                    }
+                ),
+                200,
+            )
     return jsonify({"error": "File type not allowed."}), 400
 
 
 if __name__ == "__main__":
-    app.run(ssl_context="adhoc")
+    app.run(ssl_context=("cert.pem", "key.pem"))

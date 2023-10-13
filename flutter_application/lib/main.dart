@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'dart:io';
@@ -11,9 +13,26 @@ late List<CameraDescription> cameras;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
+  HttpOverrides.global = MyHttpOverrides();
+  // await addSelfSignedCertificate();
   runApp(const MyApp());
 }
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+// Future<bool> addSelfSignedCertificate() async {
+//   ByteData data = await rootBundle.load('assets/raw/cert.pem');
+//   SecurityContext context = SecurityContext.defaultContext;
+//   context.setTrustedCertificatesBytes(data.buffer.asUint8List());
+//   return true;
+// }
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -28,9 +47,9 @@ class MyApp extends StatelessWidget {
   }
 }
 
+//variable to hold the response from the server
 var stringResponse;
-// currently a url to api for random user generator
-// const apiURL = "http://10.0.2.2:5000/api?query=2";
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -44,21 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
   // camera variable
   late CameraController _controller;
 
-  //api call function
-  // Future apicall() async {
-  //   http.Response response;
-  //   response = await http.get(Uri.parse(apiURL));
-  //   if (response.statusCode == 200) {
-  //     setState(() {
-  //       //setting the response of the apicall to stringResponse
-  //       stringResponse = response.body;
-  //     });
-  //   }
-  // }
-
   @override
   void initState() {
-    // apicall();
     super.initState();
     _controller = CameraController(cameras[0], ResolutionPreset.max);
 
@@ -85,6 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String? _selectedOption;
+    final List<String> _options = ['Western Australia', 'New South Wales', 'Victoria', 'Northern Territory', 'Australian Capital Territory', 'Southern Australia', 'Tasmania', 'Queensland', 'PASSPORT']; // Add your options here
     return Scaffold(
       //text and bars of the app (decorations)
       appBar: AppBar(title: Text("OCR program")),
@@ -94,7 +102,34 @@ class _HomeScreenState extends State<HomeScreen> {
             height: double.infinity,
             child: CameraPreview(_controller),
           ),
+          Column(
+            // aligning of the page content
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+
+            children: [
+              DropdownButton<String>(
+                value: _selectedOption,
+                items: _options.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                hint: Text(_selectedOption ?? 'Select an Option'),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedOption = newValue;
+                    print(_selectedOption);// Do something with the selected option
+                  });
+                },
+              ),
+            ],),
+          
           Center(
+            
             child: Container(
               height: 200,
               width: 300,
@@ -108,11 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // )
             ),
           ),
-          Column(
-            // aligning of the page content
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+          
               Center(
                 child: Container(
                   // adding a margin
@@ -162,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 Future<void> uploadImage(File imageFile) async {
   // The URL for the image upload, here this was the local flask app used
-  var uri = Uri.parse("http://10.0.2.2:5000/upload");
+  var uri = Uri.parse("https://10.0.2.2:5000/upload");
 
   //usage of mulipart to transfer the image data
   var request = http.MultipartRequest('POST', uri)
@@ -170,7 +201,7 @@ Future<void> uploadImage(File imageFile) async {
     ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
   var streamedResponse = await request.send();
-  var response= await http.Response.fromStream(streamedResponse);
+  var response = await http.Response.fromStream(streamedResponse);
   stringResponse = jsonDecode(response.body) as Map<String, dynamic>;
 
   // messages of success/failure of request
@@ -179,7 +210,6 @@ Future<void> uploadImage(File imageFile) async {
   } else {
     print('error!');
   }
-  
 }
 
 //image viewing page of the app, app redirects to here once image taken
@@ -197,28 +227,27 @@ class ImagePreview extends StatefulWidget {
 class _ImagePreviewState extends State<ImagePreview> {
   @override
   Widget build(BuildContext context) {
-    // retreving of image
-    File picture = File(widget.file.path);
+    // displaying of response from the picture
     return Scaffold(
       // "Image Preview" at the top
-      appBar: AppBar(title: Text("Retake photo")),
+      appBar: AppBar(
+          title: Text(stringResponse.containsKey('error') 
+              ? "Poor image, please retake photo"
+              : "Retake photo")),
       body: Center(
           // displaying of image taken
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          
           // Checking if response is null before trying to access its properties
           if (stringResponse != Null)
             Column(
-            children: stringResponse!.entries
-                    .map<Widget>(
-                      (entry) => Text('${entry.key}: ${entry.value}'),
-                    )
-                    .toList(),
-          ),
-          
-          
+              children: stringResponse!.entries
+                  .map<Widget>(
+                    (entry) => Text('${entry.key}: ${entry.value}'),
+                  )
+                  .toList(),
+            ),
         ],
       )),
     );

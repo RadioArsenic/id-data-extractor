@@ -8,7 +8,7 @@ Flask - venv setup
 start by creating the venv as well as getting the same dependencies:
 
     python3 -m venv venv
-    pip install -r requirements.txt 
+    
 
 For activating the virtual environment
     window users:
@@ -19,10 +19,9 @@ For activating the virtual environment
 
         source venv/bin/activate
     
-once in the virtual environment, download flask 
+once in the virtual environment, download the dependencies from the requirements.txt
     
-    pip install flask
-    pip install python-dotenv (this is for reading the .flaskenv file)
+    pip install -r requirements.txt 
 
 To run the flask app :
 
