@@ -54,7 +54,7 @@ class ImageConstantROI:
         }
         # need name roi (last is before first)
         AUSTRALIA_ACT = {
-            "name": [(11, 97, 250, 30)],
+            "name": [(110, 107, 54, 24), (12, 107, 96, 24)],
             "address": [(11, 126, 250, 60)],
             "expiry_date": [(252, 246, 130, 30)],
             "date_of_birth": [(115, 212, 140, 30)],
@@ -70,7 +70,17 @@ class ImageConstantROI:
             "expiry_date": [(347, 198, 75, 25)],
             "date_of_birth": [(215, 122, 120, 22)],
         }
-        # need TAS
+        AUSTRALIA_TAS = {
+            "name": [(230, 95, 140, 25), (230, 70, 90, 20)],
+            "address": [(230, 125, 170, 55)], 
+            "expiry_date": [(365, 280, 85, 15)],
+            "date_of_birth": [(400, 220, 210, 30)],
+        }
+        AUSTRALIA_PASSPORT = {
+            "name": [(210, 130, 130, 20), (210, 110, 100, 20)],
+            "expiry_date": [(210, 265, 140, 20)],
+            "date_of_birth": [(210, 185, 150, 20)],
+        }
 
 
 def cropImageRoi(image, roi):
@@ -202,6 +212,14 @@ def extract_information(image_path, location):
 
 # SA: "1 FIRST ST ADELAIDE 5000" vs "1 FIRST S” ADELAIDE 50C0", "13/09/2014" vs "43709/2014", "14/09/1995" vs "14:99;1995"
 # print(extract_information("./test_images/SA-driver-license.png", "AUSTRALIA_SA"))
+
+# print(extract_information("./test_images/TAS-driver-license.jpeg", "AUSTRALIA_TAS"))
+
+# '22 JUS 1979' vs 12 JUN 1979
+# print(extract_information("./test_images/AUS Passport.jpg", "AUSTRALIA_PASSPORT"))
+
+# WA: 'SUITE 2 120 BROADWAY SUITE 2 120 BROADW'VS'SUITE 2 120 BROADWAY CRAWLEY WA 6009, '20 Jul 202E'VS'20 Jul 2028, '45 Feb 20'VS'15 Feb 2001'
+# print(extract_information("./test_images/WA-driver-license1.jpeg", "AUSTRALIA_WA"))
 
 
 def date_builder(day, month, year):
