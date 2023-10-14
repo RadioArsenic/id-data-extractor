@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
 
 //variable to hold the response from the server
 var stringResponse;
-
+var selectedState;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -60,41 +60,38 @@ class HomeScreen extends StatefulWidget {
 
 // code for the homescreen of the app
 class _HomeScreenState extends State<HomeScreen> {
-  // camera variable
   late CameraController _controller;
+  String? _selectedOption; // Moved outside of the build method
+  final List<String> _options = [
+    'Western Australia',
+    'New South Wales',
+    'Victoria',
+    'Northern Territory',
+    'Australian Capital Territory',
+    'Southern Australia',
+    'Tasmania',
+    'Queensland',
+    'PASSPORT'
+  ];
 
   @override
   void initState() {
     super.initState();
     _controller = CameraController(cameras[0], ResolutionPreset.max);
-
-    // initialize the first available camera
     _controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       setState(() {});
-    }).catchError((Object e) {
-      //checking for camera access error
+    }).catchError((e) {
       if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenited':
-            print("acces was denied");
-            break;
-          default:
-            print(e.description);
-            break;
-        }
+        // Handle camera exception
+        print(e.description);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    String? _selectedOption;
-    final List<String> _options = ['Western Australia', 'New South Wales', 'Victoria', 'Northern Territory', 'Australian Capital Territory', 'Southern Australia', 'Tasmania', 'Queensland', 'PASSPORT']; // Add your options here
     return Scaffold(
-      //text and bars of the app (decorations)
       appBar: AppBar(title: Text("OCR program")),
       body: Stack(
         children: [
@@ -103,12 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: CameraPreview(_controller),
           ),
           Column(
-            // aligning of the page content
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-
             children: [
               DropdownButton<String>(
                 value: _selectedOption,
@@ -122,28 +115,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 onChanged: (newValue) {
                   setState(() {
                     _selectedOption = newValue;
-                    print(_selectedOption);// Do something with the selected option
+                    selectedState = _selectedOption;
+
                   });
                 },
               ),
-            ],),
-          
-          Center(
-            
-            child: Container(
-              height: 200,
-              width: 300,
-              decoration: BoxDecoration(
-                // the white box for the card outline
-                border: Border.all(color: Colors.white),
+              Center(
+                child: Container(
+                  height: 200,
+                  width: 300,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white),
+                  ),
+                ),
               ),
-              // displays response of above api call "apiURL" variable
-              // child: Center(
-              //     child: Text(stringResponse.toString()),
-              // )
-            ),
-          ),
-          
               Center(
                 child: Container(
                   // adding a margin
@@ -198,6 +183,7 @@ Future<void> uploadImage(File imageFile) async {
   //usage of mulipart to transfer the image data
   var request = http.MultipartRequest('POST', uri)
     ..headers['x-api-key'] = 'JPkxhc9cGFv35OWu267fsx8R6uZj29GL'
+    ..fields['selectedOption'] = selectedState!
     ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
   var streamedResponse = await request.send();
@@ -231,7 +217,7 @@ class _ImagePreviewState extends State<ImagePreview> {
     return Scaffold(
       // "Image Preview" at the top
       appBar: AppBar(
-          title: Text(stringResponse.containsKey('error') 
+          title: Text(stringResponse.containsKey('error')
               ? "Poor image, please retake photo"
               : "Retake photo")),
       body: Center(
@@ -240,14 +226,16 @@ class _ImagePreviewState extends State<ImagePreview> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           // Checking if response is null before trying to access its properties
-          if (stringResponse != Null)
+          if (stringResponse != Null && !stringResponse.containsKey('error'))
             Column(
               children: stringResponse!.entries
                   .map<Widget>(
                     (entry) => Text('${entry.key}: ${entry.value}'),
                   )
                   .toList(),
-            ),
+            )
+          else
+            Column(children: [Text(" Invalid image ")]),
         ],
       )),
     );

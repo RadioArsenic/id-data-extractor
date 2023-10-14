@@ -13,6 +13,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # area to put api keys
 VALID_API_KEYS = ["JPkxhc9cGFv35OWu267fsx8R6uZj29GL"]
 
+
 # Security check for user whether contain api key
 @app.before_request
 def check_api_key():
@@ -60,14 +61,17 @@ def upload_image():
     if file.filename == "":
         return jsonify({"error": "No selected file."}), 400
 
+    # Extracting the selectedOption value from the request
+    state = request.form.get("selectedOption")
+
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         filepath = "./uploads/" + filename
-        
+
         ###################################################### To be changed with actual OCR code
-        # extractedData = imageToText(filepath)
-        extractedData = "error"
+        extractedData = imageToText(filepath)
+        # extractedData = "error"
         # if os.path.isdir("./uploads"):
         #     shutil.rmtree("./uploads")
         if extractedData == "error":
@@ -81,7 +85,7 @@ def upload_image():
                         "filename": filename,
                         "name": "John Doe",
                         "birthdate": "23MAY1999",
-                        "address": "13 CHALLIS ST DICKSON ACT 2602",
+                        "address": "13 CHALLIS ST DICKSON ACT 2602" + state,
                         "realdata": extractedData,  # needs to be parsed
                     }
                 ),
