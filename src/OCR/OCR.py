@@ -152,7 +152,6 @@ def matchImage(image, baseImage):
     srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1,1,2)
     dstPoints = np.float32([kp[m.trainIdx].pt for m in best_matches]).reshape(-1,1,2)
 
-
     #Find Homography of two images
     matrix_relationship, _ = cv2.findHomography(srcPoints, dstPoints,cv2.RANSAC, 5.0)
 
@@ -173,6 +172,27 @@ def extract_information(image_path, location):
     # Resize Image
     resized_image = cv2.resize(image, (620, 413), interpolation=cv2.INTER_CUBIC)
     # displayImage(resized_image)
+
+    # Load the base image
+    if location == "AUSTRALIA_WA":
+        baseImage = cv2.imread("WA-driver-license.jpeg")
+    elif location == "AUSTRALIA_VIC":
+        baseImage = cv2.imread("VIC-driver-license.jpg")
+    elif location == "AUSTRALIA_TAS":
+        baseImage = cv2.imread("TAS-driver-license.jpeg")
+    elif location == "AUSTRALIA_SA":
+        baseImage = cv2.imread("SA-driver-license.png")
+    elif location == "AUSTRALIA_QLD":
+        baseImage = cv2.imread("QLD-driver-license.jpg")
+    elif location == "AUSTRALIA_NT":
+        baseImage = cv2.imread("NT-driver-license.png")
+    elif location == "AUSTRALIA_NSW":
+        baseImage = cv2.imread("NSW-driver-license.jpg")
+    elif location == "AUSTRALIA_ACT":
+        baseImage = cv2.imread("ACT-driver-license.png")
+
+    # Match the image with base image
+    image = matchImage(resized_image, baseImage)
 
     for key, roi in getattr(ImageConstantROI.CCCD, location).items():
         data = ""
@@ -383,6 +403,11 @@ def remove_file(image_path):
 # address
 # expiry_date
 # date_of_birth
+
+def to_uppercase(text):
+    """helper function to transform name to all upercase
+    for consistent formatting"""
+    return text.upper()
 
 
 def parsetoJSON(information):
