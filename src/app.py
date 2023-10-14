@@ -1,5 +1,5 @@
 import os, shutil
-from src.OCR import imageToText
+from src.OCR.OCR import imageToText
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
@@ -51,8 +51,8 @@ def extract_data():
         filepath = "./uploads/" + filename
 
         ###################################################### To be changed with actual OCR code
-        extractedData = imageToText(filepath)
-        # extractedData = "error"
+        # extractedData = imageToText(filepath)
+        extractedData = "error"
 
         # deletes the images from the client after text has been extracted
         if os.path.isdir("./uploads"):
