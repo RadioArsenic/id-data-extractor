@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-//variable to hold the response from the server, variable for state
+//global variable to hold the response from the server, variable for state
 var stringResponse;
 var selectedState;
 
@@ -52,7 +52,7 @@ class HomeScreen extends StatefulWidget {
 // code for the homescreen of the app
 class _HomeScreenState extends State<HomeScreen> {
   late CameraController _controller;
-  String? _selectedOption; // Moved outside of the build method
+  String? _selectedOption = 'Western Australia'; // Moved outside of the build method
   final List<String> _options = [
     'Western Australia',
     'New South Wales',
@@ -133,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (_controller.value.isTakingPicture) {
                         return;
                       }
-
+                        
                       try {
                         // the taking of a picture
                         XFile file = await _controller.takePicture();

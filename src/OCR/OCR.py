@@ -146,7 +146,7 @@ def matchImage(image, baseImage):
 
     #Show match img  
     imgMatch = cv2.drawMatches(image, kp1, baseImage, kp, best_matches,None, flags=2)
-    displayImage(imgMatch)
+    # displayImage(imgMatch)
 
     #Init source points and destination points for findHomography function.
     srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1,1,2)
@@ -158,7 +158,7 @@ def matchImage(image, baseImage):
     #Transform the image to have the same structure as the base image
     img_final = cv2.warpPerspective(image, matrix_relationship, (baseW, baseH))
 
-    displayImage(img_final)
+    # displayImage(img_final)
 
     return img_final
 

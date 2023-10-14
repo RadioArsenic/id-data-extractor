@@ -1,5 +1,5 @@
 import os, shutil
-from src.OCR.OCR import imageToText
+from OCR.OCR import extract_information
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
@@ -31,14 +31,13 @@ def extract_data():
     # checks to see whether the folder to contain file exists
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-    # check if the post request has the file part
+    # check if the post request has the/a file 
     if "file" not in request.files:
-        return jsonify({"error": "No file part in the request."}), 400
+        return jsonify({"error": "No file in the request."}), 400
 
     # file name has to be "file" in order for it to work
     file = request.files["file"]
 
-    # if user does not select file, browser submits an empty part without filename
     if file.filename == "":
         return jsonify({"error": "No selected file."}), 400
 
@@ -51,7 +50,7 @@ def extract_data():
         filepath = "./uploads/" + filename
 
         ###################################################### To be changed with actual OCR code
-        # extractedData = imageToText(filepath)
+        #extractedData = extract_information(filepath, state)
         extractedData = "error"
 
         # deletes the images from the client after text has been extracted
@@ -102,4 +101,4 @@ def formated_state(state):
 
 
 if __name__ == "__main__":
-    app.run(ssl_context=("cert.pem", "key.pem"))
+    app.run(debug=True, ssl_context=("cert.pem", "key.pem"))
