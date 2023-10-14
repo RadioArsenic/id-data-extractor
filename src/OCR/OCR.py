@@ -328,6 +328,10 @@ def validate_date(date):
     month = int(date[3:5])
     year = int(date[6:])
     # checking date is valid
+    if day == 31 and (month == 2 or month == 4 or month == 6 or month == 9 or month == 11):
+        return 0
+    if (day == 30 or day == 29) and month == 2:
+        return 0
     if 31 < day or day < 1:
         return 0
     if 13 < month or month < 1:
