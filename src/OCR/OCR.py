@@ -152,7 +152,6 @@ def matchImage(image, baseImage):
     srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1,1,2)
     dstPoints = np.float32([kp[m.trainIdx].pt for m in best_matches]).reshape(-1,1,2)
 
-
     #Find Homography of two images
     matrix_relationship, _ = cv2.findHomography(srcPoints, dstPoints,cv2.RANSAC, 5.0)
 
@@ -193,7 +192,7 @@ def extract_information(image_path, location):
         baseImage = cv2.imread("ACT-driver-license.png")
 
     # Match the image with base image
-    image = matcher(resized_image, baseImage)
+    image = matchImage(resized_image, baseImage)
 
     for key, roi in getattr(ImageConstantROI.CCCD, location).items():
         data = ""
