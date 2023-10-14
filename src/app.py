@@ -24,7 +24,8 @@ def check_api_key():
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Receives an image from 
+
+# Receives an image from
 @app.route("/extractData", methods=["POST"])
 def extract_data():
     # checks to see whether the folder to contain file exists
@@ -42,7 +43,7 @@ def extract_data():
         return jsonify({"error": "No selected file."}), 400
 
     # Extracting the selectedOption value from the request
-    state = formatedState(request.form.get("selectedOption"))
+    state = formated_state(request.form.get("selectedOption"))
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
@@ -75,26 +76,30 @@ def extract_data():
             )
     return jsonify({"error": "File type not allowed."}), 400
 
-def formatedState(state):
-    if (state == "Western Australia"):
-        return "AUSTRALIA_WA"
-    if (state == "New South Wales"):
-        return "AUSTRALIA_NSW"
-    if (state == "Victoria"):
-        return "AUSTRALIA_WA"
-    if (state == "Northern Territory"):
-        return "AUSTRALIA_NT"
-    if (state == "Australian Capital Territory"):
-        return "AUSTRALIA_ACT"
-    if (state == "Southern Australia"):
-        return "AUSTRALIA_SA"
-    if (state == "Tasmania"):
-        return "AUSTRALIA_TAS"
-    if (state == "Queensland"):
-        return "AUSTRALIA_QL"
-    if (state == "PASSPORT"):
-        return "AUSTRALIA"
-    
+
+def formated_state(state):
+    formated = "AUSTRALIA"
+    if state == "Western Australia":
+        formated = formated + "_WA"
+    elif state == "New South Wales":
+        formated = formated + "_NSW"
+    elif state == "Victoria":
+        formated = formated + "_VIC"
+    elif state == "Northern Territory":
+        formated = formated + "_NT"
+    elif state == "Australian Capital Territory":
+        formated = formated + "_ACT"
+    elif state == "Southern Australia":
+        formated = formated + "_SA"
+    elif state == "Tasmania":
+        formated = formated + "_TAS"
+    elif state == "Queensland":
+        formated = formated + "_QL"
+    elif state == "PASSPORT":
+        # assuming default is passport
+        pass
+    return formated
+
 
 if __name__ == "__main__":
     app.run(ssl_context=("cert.pem", "key.pem"))
