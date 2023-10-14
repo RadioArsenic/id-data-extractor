@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         XFile file = await _controller.takePicture();
 
                         // Uploading the image to the api
-                        await uploadImage(File(file.path));
+                        await extractData(File(file.path));
 
                         //changes to a image view mode
                         Navigator.push(
@@ -166,9 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-Future<void> uploadImage(File imageFile) async {
+Future<void> extractData(File imageFile) async {
   // The URL for the image upload, here this was the local flask app used
-  var uri = Uri.parse("https://10.0.2.2:5000/upload");
+  var uri = Uri.parse("https://10.0.2.2:5000/extractData");
 
   //usage of mulipart to transfer the image data
   var request = http.MultipartRequest('POST', uri)

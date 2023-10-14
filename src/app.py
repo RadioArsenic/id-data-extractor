@@ -24,9 +24,9 @@ def check_api_key():
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
-@app.route("/upload", methods=["POST"])
-def upload_image():
+# Receives an image from 
+@app.route("/extractData", methods=["POST"])
+def extract_data():
     # checks to see whether the folder to contain file exists
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
@@ -42,7 +42,7 @@ def upload_image():
         return jsonify({"error": "No selected file."}), 400
 
     # Extracting the selectedOption value from the request
-    state = request.form.get("selectedOption")
+    state = formatedState(request.form.get("selectedOption"))
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
@@ -75,6 +75,26 @@ def upload_image():
             )
     return jsonify({"error": "File type not allowed."}), 400
 
+def formatedState(state):
+    if (state == "Western Australia"):
+        return "AUSTRALIA_WA"
+    if (state == "New South Wales"):
+        return "AUSTRALIA_NSW"
+    if (state == "Victoria"):
+        return "AUSTRALIA_WA"
+    if (state == "Northern Territory"):
+        return "AUSTRALIA_NT"
+    if (state == "Australian Capital Territory"):
+        return "AUSTRALIA_ACT"
+    if (state == "Southern Australia"):
+        return "AUSTRALIA_SA"
+    if (state == "Tasmania"):
+        return "AUSTRALIA_TAS"
+    if (state == "Queensland"):
+        return "AUSTRALIA_QL"
+    if (state == "PASSPORT"):
+        return "AUSTRALIA"
+    
 
 if __name__ == "__main__":
     app.run(ssl_context=("cert.pem", "key.pem"))
