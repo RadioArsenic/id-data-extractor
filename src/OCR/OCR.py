@@ -366,6 +366,11 @@ def remove_file(image_path):
 # expiry_date
 # date_of_birth
 
+def to_uppercase(text):
+    """helper function to transform name to all upercase
+    for consistent formatting"""
+    return text.upper()
+
 
 def parsetoJSON(information):
     """Converts python dictionary to json. Returns 0 if error. Input is information from extract_information()"""
