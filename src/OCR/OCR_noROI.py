@@ -129,7 +129,7 @@ def month_conversion(month):
 
 
 def date_detection(text):
-    """a function to detect dates in a variety of forms and transform
+    """a function to take dates in a variety of forms and transform
     them into the typical dd-mm-yyyy format"""
     # an array to hold all discovered dates
     dates = []
@@ -227,6 +227,19 @@ def validate_dates(dates):
             if year < year_check:
                 birthdate = i
     return birthdate
+
+
+def validate_date(date):
+    """validates an input date"""
+    year_check = 2101
+    day = int(date[:2])
+    month = int(date[3:5])
+    year = int(date[6:])
+    # checking date is valid
+    if 32 < day < 0 or 13 < month < 0 or 2100 < year < 1900:
+        return 0
+    else:
+        return date
 
 
 def remove_file(image_path):
