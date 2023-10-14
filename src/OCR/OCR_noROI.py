@@ -187,7 +187,7 @@ def date_detection(text):
     matches_3dash.extend(re.findall(pattern4Space, text))
     for i in matches_3dash:
         month = month_conversion(i[3:7])
-        dates.append(date_builder(i[:2], month, i[9:]))
+        dates.append(date_builder(i[:2], month, i[8:]))
 
     # dd-MMM-yyyy dd/MMM/yyyy dd.MMM.yyyy dd MMM yyyy
     matches_3dash = re.findall(patternLDash, text)
