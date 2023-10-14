@@ -175,21 +175,21 @@ def extract_information(image_path, location):
 
     # Load the base image
     if location == "AUSTRALIA_WA":
-        baseImage = cv2.imread("WA-driver-license.jpeg")
+        baseImage = cv2.imread("./test_images/WA-driver-license.jpeg")
     elif location == "AUSTRALIA_VIC":
-        baseImage = cv2.imread("VIC-driver-license.jpg")
+        baseImage = cv2.imread("./test_images/VIC-driver-license.jpg")
     elif location == "AUSTRALIA_TAS":
-        baseImage = cv2.imread("TAS-driver-license.jpeg")
+        baseImage = cv2.imread("./test_images/TAS-driver-license.jpeg")
     elif location == "AUSTRALIA_SA":
-        baseImage = cv2.imread("SA-driver-license.png")
+        baseImage = cv2.imread("./test_images/SA-driver-license.png")
     elif location == "AUSTRALIA_QLD":
-        baseImage = cv2.imread("QLD-driver-license.jpg")
+        baseImage = cv2.imread("./test_images/QLD-driver-license.jpg")
     elif location == "AUSTRALIA_NT":
-        baseImage = cv2.imread("NT-driver-license.png")
+        baseImage = cv2.imread("./test_images/NT-driver-license.png")
     elif location == "AUSTRALIA_NSW":
-        baseImage = cv2.imread("NSW-driver-license.jpg")
+        baseImage = cv2.imread("./test_images/NSW-driver-license.jpg")
     elif location == "AUSTRALIA_ACT":
-        baseImage = cv2.imread("ACT-driver-license.png")
+        baseImage = cv2.imread("./test_images/ACT-driver-license.png")
 
     # Match the image with base image
     image = matchImage(resized_image, baseImage)
