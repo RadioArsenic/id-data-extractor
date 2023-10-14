@@ -5,6 +5,7 @@ import json
 import re
 import lexnlp.extract.en.dates as dates
 import imghdr
+import os
 
 
 def image_to_text(image_path):
@@ -122,27 +123,41 @@ def month_conversion(month):
         "OCT": "10",
         "NOV": "11",
         "DEC": "12",
+        "SEPT": "09",
     }
     return month_dict.get(month, "00")
 
 
 def date_detection(text):
-    """a function to detect dates in a variety of forms and transform
+    """a function to take dates in a variety of forms and transform
     them into the typical dd-mm-yyyy format"""
     # an array to hold all discovered dates
     dates = []
 
     # regex patterns
-    pattern = r"\b\d{16}\b"  # 16 numbers
-    pattern2 = r"\d{2}[A-Za-z]{3}\d{4}"  # 10JUN1990
-    pattern3 = r"[0-9]{2}-[A-Z]{3}-[0-9]{4}"  # 10-JUN-1990
-    pattern4 = r"[0-9]{2}-[0-9]{2}-[0-9]{4}"  # 10-06-1990
-    pattern5 = r"[0-9]{2}/[A-Z]{3}/[0-9]{4}"  # 10/JUN/1990
-    pattern6 = r"[0-9]{2}/[0-9]{2}/[0-9]{4}"  # 10/06/1990
+    pattern16 = r"\b\d{16}\b"  # 16 numbers
     pattern8 = r"\b\d{8}\b"  # 8 numbers
 
+    pattern3L = r"\d{2}[A-Za-z]{3}\d{4}"  # 10JUN1990
+    pattern4L = r"\d{2}[A-Za-z]{4}\d{4}"  # 10SEPT1990
+    
+    patternLDash = r"[0-9]{2}-[A-Za-z]{3}-[0-9]{4}"  # 10-JUN-1990
+    patternLSlash = r"[0-9]{2}/[A-Za-z]{3}/[0-9]{4}"  # 10/JUN/1990
+    patternLDot = r"[0-9]{2}.[A-Za-z]{3}.[0-9]{4}"  # 10.JUN.1990
+    patternLSpace = r'\d{2} [A-Za-z]{3} \d{4}' # 10 JUN 1990
+
+    patternDDash = r"[0-9]{2}-[0-9]{2}-[0-9]{4}"  # 10-06-1990
+    patternDSlash = r"[0-9]{2}/[0-9]{2}/[0-9]{4}"  # 10/06/1990
+    patternDDot = r"[0-9]{2}.[0-9]{2}.[0-9]{4}"  # 10.06.1990
+    patternDSpace = r'\d{2} \d{2} \d{4}' # 10 06 1990
+
+    pattern4Dash = r"[0-9]{2}-[A-Za-z]{4}-[0-9]{4}"  # 10-SEPT-1990
+    pattern4Slash = r"[0-9]{2}/[A-Za-z]{4}/[0-9]{4}"  # 10/SEPT/1990
+    pattern4Dot = r"[0-9]{2}.[A-Za-z]{4}.[0-9]{4}"  # 10.SEPT.1990
+    pattern4Space = r'\d{2} [A-Za-z]{4} \d{4}' # 10 SEPT 1990
+
     # 16 numbers
-    matches_16 = re.findall(pattern, text)
+    matches_16 = re.findall(pattern16, text)
     for i in matches_16:
         j = i[8:]
         dates.append(date_builder(i[:2], i[2:4], i[4:8]))
@@ -154,21 +169,40 @@ def date_detection(text):
         dates.append(date_builder(i[:2], i[2:4], i[4:]))
 
     # ddMMMyyyy
-    matches_3m = re.findall(pattern2, text)
+    matches_3m = re.findall(pattern3L, text)
     for i in matches_3m:
         month = month_conversion(i[2:5])
         dates.append(date_builder(i[:2], month, i[5:]))
+    
+    # ddMMMMyyyy
+    matches_3m = re.findall(pattern4L, text)
+    for i in matches_3m:
+        month = month_conversion(i[2:6])
+        dates.append(date_builder(i[:2], month, i[6:]))
 
-    # dd-MMM-yyyy dd/MMM/yyyy
-    matches_3dash = re.findall(pattern3, text)
-    matches_3dash.extend(re.findall(pattern5, text))
+    # dd-MMMM-yyyy dd/MMMM/yyyy dd.MMMM.yyyy dd MMMM yyyy
+    matches_3dash = re.findall(pattern4Dash, text)
+    matches_3dash.extend(re.findall(pattern4Slash, text))
+    matches_3dash.extend(re.findall(pattern4Dot, text))
+    matches_3dash.extend(re.findall(pattern4Space, text))
+    for i in matches_3dash:
+        month = month_conversion(i[3:7])
+        dates.append(date_builder(i[:2], month, i[8:]))
+
+    # dd-MMM-yyyy dd/MMM/yyyy dd.MMM.yyyy dd MMM yyyy
+    matches_3dash = re.findall(patternLDash, text)
+    matches_3dash.extend(re.findall(patternLSlash, text))
+    matches_3dash.extend(re.findall(patternLDot, text))
+    matches_3dash.extend(re.findall(patternLSpace, text))
     for i in matches_3dash:
         month = month_conversion(i[3:6])
         dates.append(date_builder(i[:2], month, i[7:]))
 
-    # dd-mm-yyyy dd/mm/yyyy
-    matches_2dash = re.findall(pattern4, text)
-    matches_2dash.extend(re.findall(pattern6, text))
+    # dd-mm-yyyy dd/mm/yyyy dd.mm.yyyy dd mm yyyy
+    matches_2dash = re.findall(patternDDash, text)
+    matches_2dash.extend(re.findall(patternDSlash, text))
+    matches_2dash.extend(re.findall(patternDDot, text))
+    matches_2dash.extend(re.findall(patternDSpace, text))
     for i in matches_2dash:
         dates.append(date_builder(i[:2], i[3:5], i[6:]))
 
@@ -193,6 +227,19 @@ def validate_dates(dates):
             if year < year_check:
                 birthdate = i
     return birthdate
+
+
+def validate_date(date):
+    """validates an input date"""
+    year_check = 2101
+    day = int(date[:2])
+    month = int(date[3:5])
+    year = int(date[6:])
+    # checking date is valid
+    if 32 < day < 0 or 13 < month < 0 or 2100 < year < 1900:
+        return 0
+    else:
+        return date
 
 
 def remove_file(image_path):
