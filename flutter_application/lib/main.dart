@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'dart:io';
@@ -14,7 +12,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
   HttpOverrides.global = MyHttpOverrides();
-  // await addSelfSignedCertificate();
   runApp(const MyApp());
 }
 
@@ -27,12 +24,6 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-// Future<bool> addSelfSignedCertificate() async {
-//   ByteData data = await rootBundle.load('assets/raw/cert.pem');
-//   SecurityContext context = SecurityContext.defaultContext;
-//   context.setTrustedCertificatesBytes(data.buffer.asUint8List());
-//   return true;
-// }
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -42,12 +33,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
 
-//variable to hold the response from the server
+//variable to hold the response from the server, variable for state
 var stringResponse;
 var selectedState;
 
@@ -92,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("OCR program")),
+      appBar: AppBar(title: const Text("OCR program")),
       body: Stack(
         children: [
           SizedBox(
@@ -116,7 +107,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {
                     _selectedOption = newValue;
                     selectedState = _selectedOption;
-
                   });
                 },
               ),
@@ -160,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       } on CameraException catch (e) {
                         debugPrint("Error occurred while taking picture: $e");
-                        return null;
+                        return;
                       }
                     },
                     color: Colors.white,
@@ -219,7 +209,7 @@ class _ImagePreviewState extends State<ImagePreview> {
       appBar: AppBar(
           title: Text(stringResponse.containsKey('error')
               ? "Poor image, please retake photo"
-              : "Retake photo")),
+              : "Retake photo?")),
       body: Center(
           // displaying of image taken
           child: Column(
@@ -235,7 +225,7 @@ class _ImagePreviewState extends State<ImagePreview> {
                   .toList(),
             )
           else
-            Column(children: [Text(" Invalid image ")]),
+            const Column(children: [Text(" Invalid image ")]),
         ],
       )),
     );

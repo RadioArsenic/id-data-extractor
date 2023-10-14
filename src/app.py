@@ -7,7 +7,6 @@ from werkzeug.utils import secure_filename
 # for holding the uploading images
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
-
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # area to put api keys
@@ -22,34 +21,15 @@ def check_api_key():
         return jsonify(error="missing or invalid API key"), 403
 
 
-@app.route("/")
-def index():
-    return "Hello World, flask!"
-
-
-# function for testing api call, this api call returns the ascii of a character
-
-
-@app.route("/api", methods=["GET"])
-def return_ascii():
-    dictionary = {}
-    inputchr = str(request.args["query"])
-    answer = str(ord(inputchr))
-    dictionary["output"] = answer
-    return jsonify(dictionary)
-
-
-# checks to see whether the folder to contain file exists
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route("/upload", methods=["POST"])
 def upload_image():
+    # checks to see whether the folder to contain file exists
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
     # check if the post request has the file part
     if "file" not in request.files:
         return jsonify({"error": "No file part in the request."}), 400
@@ -72,8 +52,10 @@ def upload_image():
         ###################################################### To be changed with actual OCR code
         extractedData = imageToText(filepath)
         # extractedData = "error"
-        # if os.path.isdir("./uploads"):
-        #     shutil.rmtree("./uploads")
+
+        # deletes the images from the client after text has been extracted
+        if os.path.isdir("./uploads"):
+            shutil.rmtree("./uploads")
         if extractedData == "error":
             return jsonify({"error": "improper image please retake"}), 200
         else:
