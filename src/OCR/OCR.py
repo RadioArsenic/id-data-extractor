@@ -6,25 +6,6 @@ import re
 import imghdr
 import os
 
-# TODO
-"""
-!Account for skewing
-
-adding roi coords:
-    ACT name roi (last is before first)
-    TAS roi 
-
-fixing roi:
-    VIC, NT, SA all have errors
-    account for long and short names
-
-
-Cleaning data
-    parse dates into same format (' ', '-', '/', '.')
-            QLD does diff style to rest again
-    name upper vs lower case
-"""
-
 
 class ImageConstantROI:
     class CCCD(object):
@@ -52,7 +33,6 @@ class ImageConstantROI:
             "expiry_date": [(490, 371, 90, 20)],
             "date_of_birth": [(350, 371, 90, 20)],
         }
-        # need name roi (last is before first)
         AUSTRALIA_ACT = {
             "name": [(110, 107, 54, 24), (12, 107, 96, 24)],
             "address": [(11, 126, 250, 60)],
@@ -72,7 +52,7 @@ class ImageConstantROI:
         }
         AUSTRALIA_TAS = {
             "name": [(230, 95, 140, 25), (230, 70, 90, 20)],
-            "address": [(230, 125, 170, 55)], 
+            "address": [(230, 125, 170, 55)],
             "expiry_date": [(365, 280, 85, 15)],
             "date_of_birth": [(400, 220, 210, 30)],
         }
@@ -89,20 +69,19 @@ def cropImageRoi(image, roi):
     ]
     return roi_cropped
 
+
 def preprocessing(image):
     # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.multiply(gray, 1.5)
 
     # blur remove noise
-    # blured = cv2.medianBlur(gray,3)
     blured1 = cv2.medianBlur(gray, 3)
     blured2 = cv2.medianBlur(gray, 51)
     divided = np.ma.divide(blured1, blured2).data
     normed = np.uint8(255 * divided / divided.max())
 
     # Threshold the image to convert non-black areas to white
-    # _, thresholded = cv2.threshold(normed, 90, 255, cv2.THRESH_BINARY)
     th, thresholded = cv2.threshold(normed, 0, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY)
 
     # Create an all-white image of the same size as the original image
@@ -124,41 +103,41 @@ def displayImage(image):
 
 
 def matchImage(image, baseImage):
-    #Declare image size, width height and chanel
+    # Declare image size, width height and chanel
     baseH, baseW, baseC = baseImage.shape
-    
+
     orb = cv2.ORB_create(1000)
 
     kp, des = orb.detectAndCompute(baseImage, None)
-    
+
     PER_MATCH = 0.25
 
-    #Detect keypoint on image
+    # Detect keypoint on image
     kp1, des1 = orb.detectAndCompute(image, None)
 
-    #Init BF Matcher, find the matches points of two images
+    # Init BF Matcher, find the matches points of two images
     bf = cv2.BFMatcher(cv2.NORM_HAMMING)
     matches = list(bf.match(des1, des))
 
-    #Select top 30% best matcher 
+    # Select top 30% best matcher
     matches.sort(key=lambda x: x.distance)
-    best_matches = matches[:int(len(matches)*PER_MATCH)]
+    best_matches = matches[: int(len(matches) * PER_MATCH)]
 
-    #Show match img  
-    imgMatch = cv2.drawMatches(image, kp1, baseImage, kp, best_matches,None, flags=2)
-    # displayImage(imgMatch)
+    # Show match img
+    imgMatch = cv2.drawMatches(image, kp1, baseImage, kp, best_matches, None, flags=2)
+    displayImage(imgMatch)
 
-    #Init source points and destination points for findHomography function.
-    srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1,1,2)
-    dstPoints = np.float32([kp[m.trainIdx].pt for m in best_matches]).reshape(-1,1,2)
+    # Init source points and destination points for findHomography function.
+    srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1, 1, 2)
+    dstPoints = np.float32([kp[m.trainIdx].pt for m in best_matches]).reshape(-1, 1, 2)
 
-    #Find Homography of two images
-    matrix_relationship, _ = cv2.findHomography(srcPoints, dstPoints,cv2.RANSAC, 5.0)
+    # Find Homography of two images
+    matrix_relationship, _ = cv2.findHomography(srcPoints, dstPoints, cv2.RANSAC, 5.0)
 
-    #Transform the image to have the same structure as the base image
+    # Transform the image to have the same structure as the base image
     img_final = cv2.warpPerspective(image, matrix_relationship, (baseW, baseH))
 
-    # displayImage(img_final)
+    displayImage(img_final)
 
     return img_final
 
@@ -219,30 +198,6 @@ def extract_information(image_path, location):
     return information
 
 
-# fine
-# print(extract_information("./test_images/WA-driver-license.jpeg", "AUSTRALIA_WA"))
-# print(extract_information("./test_images/NSW-driver-license.jpg", "AUSTRALIA_NSW"))
-# print(extract_information("./test_images/ACT-driver-license.png", "AUSTRALIA_ACT"))
-# print(extract_information("./test_images/QLD-driver-license.jpg", "AUSTRALIA_QLD"))
-
-# VIC: reads "SAMPLE" as "SAMPLF"
-# print(extract_information("./test_images/VIC-driver-license.jpg", "AUSTRALIA_VIC"))
-
-# NT: "2 SAMPLE ST ROADSAFETY NT 0800" vs "'SSAMOLE ST ROACSAFLTY N7 C8IC", "25/12/1999" vs "25112:1999"
-# print(extract_information("./test_images/NT-driver-license.png", "AUSTRALIA_NT"))
-
-# SA: "1 FIRST ST ADELAIDE 5000" vs "1 FIRST S” ADELAIDE 50C0", "13/09/2014" vs "43709/2014", "14/09/1995" vs "14:99;1995"
-# print(extract_information("./test_images/SA-driver-license.png", "AUSTRALIA_SA"))
-
-# print(extract_information("./test_images/TAS-driver-license.jpeg", "AUSTRALIA_TAS"))
-
-# '22 JUS 1979' vs 12 JUN 1979
-# print(extract_information("./test_images/AUS Passport.jpg", "AUSTRALIA_PASSPORT"))
-
-# WA: 'SUITE 2 120 BROADWAY SUITE 2 120 BROADW'VS'SUITE 2 120 BROADWAY CRAWLEY WA 6009, '20 Jul 202E'VS'20 Jul 2028, '45 Feb 20'VS'15 Feb 2001'
-# print(extract_information("./test_images/WA-driver-license1.jpeg", "AUSTRALIA_WA"))
-
-
 def date_builder(day, month, year):
     """helper function for date_formatter. Formats the date"""
     return f"{day}-{month}-{year}"
@@ -290,41 +245,41 @@ def date_formatter(text):
 
     pattern3L = r"\d{2}[A-Za-z]{3}\d{4}"  # 10JUN1990
     pattern4L = r"\d{2}[A-Za-z]{4}\d{4}"  # 10SEPT1990
-    
+
     patternLDash = r"[0-9]{2}-[A-Za-z]{3}-[0-9]{4}"  # 10-JUN-1990
     patternLSlash = r"[0-9]{2}/[A-Za-z]{3}/[0-9]{4}"  # 10/JUN/1990
     patternLDot = r"[0-9]{2}.[A-Za-z]{3}.[0-9]{4}"  # 10.JUN.1990
-    patternLSpace = r'\d{2} [A-Za-z]{3} \d{4}' # 10 JUN 1990
+    patternLSpace = r"\d{2} [A-Za-z]{3} \d{4}"  # 10 JUN 1990
 
     patternDDash = r"[0-9]{2}-[0-9]{2}-[0-9]{4}"  # 10-06-1990
     patternDSlash = r"[0-9]{2}/[0-9]{2}/[0-9]{4}"  # 10/06/1990
     patternDDot = r"[0-9]{2}.[0-9]{2}.[0-9]{4}"  # 10.06.1990
-    patternDSpace = r'\d{2} \d{2} \d{4}' # 10 06 1990
+    patternDSpace = r"\d{2} \d{2} \d{4}"  # 10 06 1990
 
     pattern4Dash = r"[0-9]{2}-[A-Za-z]{4}-[0-9]{4}"  # 10-SEPT-1990
     pattern4Slash = r"[0-9]{2}/[A-Za-z]{4}/[0-9]{4}"  # 10/SEPT/1990
     pattern4Dot = r"[0-9]{2}.[A-Za-z]{4}.[0-9]{4}"  # 10.SEPT.1990
-    pattern4Space = r'\d{2} [A-Za-z]{4} \d{4}' # 10 SEPT 1990
+    pattern4Space = r"\d{2} [A-Za-z]{4} \d{4}"  # 10 SEPT 1990
 
     # 8 numbers
     matches_8 = re.findall(pattern8, text)
     if len(matches_8) > 0:
         i = matches_8[0]
-        date = (date_builder(i[:2], i[2:4], i[4:]))
+        date = date_builder(i[:2], i[2:4], i[4:])
 
     # ddMMMyyyy
     matches_3m = re.findall(pattern3L, text)
     if len(matches_3m) > 0:
         i = matches_3m[0]
         month = month_conversion(i[2:5])
-        date = (date_builder(i[:2], month, i[5:]))
-    
+        date = date_builder(i[:2], month, i[5:])
+
     # ddMMMMyyyy
     matches_4m = re.findall(pattern4L, text)
     if len(matches_4m) > 0:
         i = matches_4m[0]
         month = month_conversion(i[2:6])
-        date = (date_builder(i[:2], month, i[6:]))
+        date = date_builder(i[:2], month, i[6:])
 
     # dd-MMMM-yyyy dd/MMMM/yyyy dd.MMMM.yyyy dd MMMM yyyy
     matches_4dash = re.findall(pattern4Dash, text)
@@ -334,7 +289,7 @@ def date_formatter(text):
     if len(matches_4dash) > 0:
         i = matches_4dash[0]
         month = month_conversion(i[3:7])
-        date = (date_builder(i[:2], month, i[8:]))
+        date = date_builder(i[:2], month, i[8:])
 
     # dd-MMM-yyyy dd/MMM/yyyy dd.MMM.yyyy dd MMM yyyy
     matches_3dash = re.findall(patternLDash, text)
@@ -344,7 +299,7 @@ def date_formatter(text):
     if len(matches_3dash) > 0:
         i = matches_3dash[0]
         month = month_conversion(i[3:6])
-        date = (date_builder(i[:2], month, i[7:]))
+        date = date_builder(i[:2], month, i[7:])
 
     # dd-mm-yyyy dd/mm/yyyy dd.mm.yyyy dd mm yyyy
     matches_2dash = re.findall(patternDDash, text)
@@ -353,7 +308,7 @@ def date_formatter(text):
     matches_2dash.extend(re.findall(patternDSpace, text))
     if len(matches_2dash) > 0:
         i = matches_2dash[0]
-        date = (date_builder(i[:2], i[3:5], i[6:]))
+        date = date_builder(i[:2], i[3:5], i[6:])
 
     return date
 
@@ -366,7 +321,9 @@ def validate_date(date):
     month = int(date[3:5])
     year = int(date[6:])
     # checking date is valid
-    if day == 31 and (month == 2 or month == 4 or month == 6 or month == 9 or month == 11):
+    if day == 31 and (
+        month == 2 or month == 4 or month == 6 or month == 9 or month == 11
+    ):
         return 0
     if (day == 30 or day == 29) and month == 2:
         return 0
@@ -398,32 +355,20 @@ def remove_file(image_path):
     return 0
 
 
-# * INFO WANTED:
-# name
-# address
-# expiry_date
-# date_of_birth
-
-def to_uppercase(text):
-    """helper function to transform name to all upercase
-    for consistent formatting"""
-    return text.upper()
-
-
 def parsetoJSON(information):
     """Converts python dictionary to json. Returns 0 if error. Input is information from extract_information()"""
+    information["name"] = information["name"].upper()
+
     if "address" in information:
         information["address"] = re.sub(",", "", information["address"])
 
     date = date_formatter(information["expiry_date"])
-    # ? not sure how the year check bit works?
     res = validate_date(date)
     if res == 0:
         return 0
     information["expiry_date"] = "".join(str(x) for x in date)
 
     date = date_formatter(information["date_of_birth"])
-    # ? not sure how the year check bit works?
     res = validate_date(date)
     if res == 0:
         return 0
