@@ -36,7 +36,7 @@ class ImageConstantROI:
         }
         AUSTRALIA_VIC = {
             "name": [(14, 79, 350, 30)],
-            "address": [(14, 128, 350, 90)],
+            "address": [(14, 128, 350, 70)],
             "expiry_date": [(14, 230, 150, 30)],
             "date_of_birth": [(217, 230, 150, 30)],
         }
@@ -61,8 +61,8 @@ class ImageConstantROI:
         }
         AUSTRALIA_SA = {
             "name": [(37, 209, 250, 25)],
-            "address": [(16, 234, 250, 50)],
-            "expiry_date": [(335, 100, 105, 30)],
+            "address": [(16, 234, 271, 49)],
+            "expiry_date": [(335, 100, 100, 30)],
             "date_of_birth": [(181, 100, 105, 30)],
         }
         AUSTRALIA_QLD = {
@@ -73,7 +73,7 @@ class ImageConstantROI:
         AUSTRALIA_TAS = {
             "name": [(230, 95, 140, 25), (230, 70, 90, 25)],
             "address": [(230, 125, 160, 55)], 
-            "expiry_date": [(365, 280, 85, 15)],
+            "expiry_date": [(365, 280, 85, 20)],
             "date_of_birth": [(400, 220, 210, 30)],
         }
         AUSTRALIA_PASSPORT = {
@@ -224,14 +224,12 @@ def extract_information(image_path, location):
 # print(extract_information("./test_images/NSW-driver-license.jpg", "AUSTRALIA_NSW"))
 # print(extract_information("./test_images/ACT-driver-license.png", "AUSTRALIA_ACT"))
 # print(extract_information("./test_images/QLD-driver-license.jpg", "AUSTRALIA_QLD"))
-
-# VIC: reads "SAMPLE" as "SAMPLF"
 # print(extract_information("./test_images/VIC-driver-license.jpg", "AUSTRALIA_VIC"))
 
 # NT: "2 SAMPLE ST ROADSAFETY NT 0800" vs "'SSAMOLE ST ROACSAFLTY N7 C8IC", "25/12/1999" vs "25112:1999"
 # print(extract_information("./test_images/NT-driver-license.png", "AUSTRALIA_NT"))
 
-# SA: "1 FIRST ST ADELAIDE 5000" vs "1 FIRST S” ADELAIDE 50C0", "13/09/2014" vs "43709/2014", "14/09/1995" vs "14:99;1995"
+# SA: "1 FIRST ST ADELAIDE 5000" vs "1 FIRST S” ADELAIDE 5000", "14/09/1995" vs "14:99;1995"
 # print(extract_information("./test_images/SA-driver-license.png", "AUSTRALIA_SA"))
 
 # print(extract_information("./test_images/Tas-driver-license.jpg", "AUSTRALIA_TAS"))
