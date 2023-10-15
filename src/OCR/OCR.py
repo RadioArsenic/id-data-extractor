@@ -54,7 +54,7 @@ class ImageConstantROI:
         }
         # need name roi (last is before first)
         AUSTRALIA_ACT = {
-            "name": [(110, 107, 54, 24), (12, 107, 96, 24)],
+            "name": [(110, 97, 54, 24), (12, 97, 96, 24)],
             "address": [(11, 126, 250, 60)],
             "expiry_date": [(252, 246, 130, 30)],
             "date_of_birth": [(115, 212, 140, 30)],
@@ -74,12 +74,12 @@ class ImageConstantROI:
             "name": [(230, 95, 140, 25), (230, 70, 90, 25)],
             "address": [(230, 125, 160, 55)], 
             "expiry_date": [(365, 280, 85, 20)],
-            "date_of_birth": [(400, 220, 210, 30)],
+            "date_of_birth": [(413, 220, 200, 31)],
         }
         AUSTRALIA_PASSPORT = {
             "name": [(210, 130, 130, 20), (210, 110, 100, 20)],
-            "expiry_date": [(210, 265, 140, 20)],
-            "date_of_birth": [(210, 185, 150, 20)],
+            "expiry_date": [(209, 264, 143, 21)],
+            "date_of_birth": [(210, 185, 150, 21)],
         }
 
 
@@ -179,7 +179,7 @@ def extract_information(image_path, location):
     elif location == "AUSTRALIA_VIC":
         baseImage = cv2.imread("./test_images/VIC-driver-license.jpg")
     elif location == "AUSTRALIA_TAS":
-        baseImage = cv2.imread("./test_images/TAS-driver-license.jpeg")
+        baseImage = cv2.imread("./test_images/Tas-driver-license.jpg")
     elif location == "AUSTRALIA_SA":
         baseImage = cv2.imread("./test_images/SA-driver-license.png")
     elif location == "AUSTRALIA_QLD":
@@ -190,6 +190,9 @@ def extract_information(image_path, location):
         baseImage = cv2.imread("./test_images/NSW-driver-license.jpg")
     elif location == "AUSTRALIA_ACT":
         baseImage = cv2.imread("./test_images/ACT-driver-license.png")
+    elif location == "AUSTRALIA_PASSPORT":
+        baseImage = cv2.imread("./test_images/AUS Passport.jpg")
+
 
     # Match the image with base image
     image = matchImage(resized_image, baseImage)
@@ -225,6 +228,7 @@ def extract_information(image_path, location):
 # print(extract_information("./test_images/ACT-driver-license.png", "AUSTRALIA_ACT"))
 # print(extract_information("./test_images/QLD-driver-license.jpg", "AUSTRALIA_QLD"))
 # print(extract_information("./test_images/VIC-driver-license.jpg", "AUSTRALIA_VIC"))
+# print(extract_information("./test_images/Tas-driver-license.jpg", "AUSTRALIA_TAS"))
 
 # NT: "2 SAMPLE ST ROADSAFETY NT 0800" vs "'SSAMOLE ST ROACSAFLTY N7 C8IC", "25/12/1999" vs "25112:1999"
 # print(extract_information("./test_images/NT-driver-license.png", "AUSTRALIA_NT"))
@@ -232,9 +236,7 @@ def extract_information(image_path, location):
 # SA: "1 FIRST ST ADELAIDE 5000" vs "1 FIRST S” ADELAIDE 5000", "14/09/1995" vs "14:99;1995"
 # print(extract_information("./test_images/SA-driver-license.png", "AUSTRALIA_SA"))
 
-# print(extract_information("./test_images/Tas-driver-license.jpg", "AUSTRALIA_TAS"))
-
-# '22 JUS 1979' vs 12 JUN 1979
+# works well but the expiry date is "auG" instead of "AUG"
 # print(extract_information("./test_images/AUS Passport.jpg", "AUSTRALIA_PASSPORT"))
 
 # WA: 'SUITE 2 120 BROADWAY SUITE 2 120 BROADW'VS'SUITE 2 120 BROADWAY CRAWLEY WA 6009, '20 Jul 202E'VS'20 Jul 2028, '45 Feb 20'VS'15 Feb 2001'
