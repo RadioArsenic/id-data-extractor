@@ -52,6 +52,7 @@ class ImageConstantROI:
         }
         AUSTRALIA_QLD = {
             "name": [(15, 86, 200, 25), (15, 62, 200, 25)],
+            "address": [],
             "expiry_date": [(347, 198, 75, 25)],
             "date_of_birth": [(215, 122, 120, 22)],
         }
@@ -63,6 +64,7 @@ class ImageConstantROI:
         }
         AUSTRALIA_PASSPORT = {
             "name": [(210, 130, 130, 20), (210, 110, 100, 20)],
+            "address": [],
             "expiry_date": [(210, 265, 140, 20)],
             "date_of_birth": [(210, 185, 150, 20)],
         }
