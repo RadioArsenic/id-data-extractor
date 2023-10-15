@@ -71,8 +71,8 @@ class ImageConstantROI:
             "date_of_birth": [(215, 122, 120, 22)],
         }
         AUSTRALIA_TAS = {
-            "name": [(230, 95, 140, 25), (230, 70, 90, 20)],
-            "address": [(230, 125, 170, 55)], 
+            "name": [(230, 95, 140, 25), (230, 70, 90, 25)],
+            "address": [(230, 125, 160, 55)], 
             "expiry_date": [(365, 280, 85, 15)],
             "date_of_birth": [(400, 220, 210, 30)],
         }
@@ -234,7 +234,7 @@ def extract_information(image_path, location):
 # SA: "1 FIRST ST ADELAIDE 5000" vs "1 FIRST S” ADELAIDE 50C0", "13/09/2014" vs "43709/2014", "14/09/1995" vs "14:99;1995"
 # print(extract_information("./test_images/SA-driver-license.png", "AUSTRALIA_SA"))
 
-# print(extract_information("./test_images/TAS-driver-license.jpeg", "AUSTRALIA_TAS"))
+# print(extract_information("./test_images/Tas-driver-license.jpg", "AUSTRALIA_TAS"))
 
 # '22 JUS 1979' vs 12 JUN 1979
 # print(extract_information("./test_images/AUS Passport.jpg", "AUSTRALIA_PASSPORT"))
