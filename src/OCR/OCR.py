@@ -250,8 +250,7 @@ def extract_information(image_path, location):
 
 def date_builder(day, month, year):
     """
-    The function `date_builder` is a helper function that formats a date by combining the day, month,
-    and year with hyphens.
+    The function `date_builder` is a helper function that formats a date into "dd-mm-yyyy".
 
     :param day: The day parameter is the numerical representation of the day in the date. For example,
     if the date is January 15th, the day parameter would be 15
@@ -259,7 +258,7 @@ def date_builder(day, month, year):
     example, January would be represented by 1, February by 2, and so on
     :param year: The year parameter is the numerical representation of the year. For example, if you
     want to format the date as "01-01-2022", the year parameter would be 2022
-    :return: a formatted date string in the format "day-month-year".
+    :return: a formatted date string in the format "dd-mm-yyyy".
     """
     return f"{day}-{month}-{year}"
 
@@ -393,7 +392,7 @@ def validate_date(date):
     input date if valid or 0 if invalid.
 
     :param date: A string representing a date in the format "dd-mm-yyyy"
-    :return:  0 if the input date is invalid, or the input date itself if it is valid.
+    :return: 0 if the input date is invalid, or the input date itself if it is valid.
     """
     # retrieving parts of date
     try:

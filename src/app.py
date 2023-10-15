@@ -18,7 +18,7 @@ VALID_API_KEYS = ["JPkxhc9cGFv35OWu267fsx8R6uZj29GL"]
 def check_api_key():
     api_key = request.headers.get("x-api-key")
     if api_key is None or api_key not in VALID_API_KEYS:
-        return jsonify(error="missing or invalid API key"), 403
+        return jsonify(error="Missing or invalid API key."), 403
 
 
 def allowed_file(filename):
@@ -59,7 +59,7 @@ def extract_data():
         # Cleans up the data and checks validity of dates
         extracted_data = clean_up_data(extracted_data)
         if extracted_data == 0:
-            return jsonify({"error": "improper image please retake"}), 400
+            return jsonify({"error": "Improper image please retake."}), 400
 
         return (
             jsonify(
