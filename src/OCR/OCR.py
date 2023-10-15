@@ -156,8 +156,7 @@ def extract_information(image_path, location):
     image = cv2.imread(image_path)
 
     # Resize Image
-    resized_image = cv2.resize(image, (620, 413), interpolation=cv2.INTER_CUBIC)
-    # displayImage(resized_image)
+    image = cv2.resize(image, (620, 413), interpolation=cv2.INTER_CUBIC)
 
     # Load the base image
     # String formatting would be cleaner but would require the image types to be the same
@@ -181,9 +180,7 @@ def extract_information(image_path, location):
         baseImage = cv2.imread("./test_images/AUS-passport.jpg")
 
     # Match the image with base image
-    # image = matchImage(resized_image, baseImage)
-
-    image = cv2.resize(image, (620, 413), interpolation=cv2.INTER_CUBIC)
+    # image = matchImage(image, baseImage)
 
     for key, roi in getattr(ImageConstantROI.CCCD, location).items():
         data = ""
@@ -208,7 +205,6 @@ def extract_information(image_path, location):
             information["name"] = f"{' '.join(parts[1:])} {parts[0]}"
 
     return information
-    # parsetoJSON(information)
 
 
 def date_builder(day, month, year):
@@ -331,9 +327,12 @@ def validate_date(date):
     """validates an input date. returns 0 if date is invalid
     otherwise, returns input date"""
     # retrieving parts of date
-    day = int(date[:2])
-    month = int(date[3:5])
-    year = int(date[6:])
+    try:
+        day = int(date[:2])
+        month = int(date[3:5])
+        year = int(date[6:])
+    except:
+        return 0
     # checking date is valid
     if day == 31 and (
         month == 2 or month == 4 or month == 6 or month == 9 or month == 11
@@ -354,24 +353,24 @@ def validate_date(date):
 
 def remove_file(image_path):
     """removes the file with the given image name.
-    if the file is not an image, or the file does not exist, returns 1
-    otherwise, returns 0"""
+    if the file is not an image, or the file does not exist, returns 0
+    otherwise, returns 1"""
     # if the file doesnt exist, return error
     if not os.path.exists(image_path):
-        return 1
+        return 0
 
     # if the file is not an image, return error
     f_type = imghdr.what(image_path)
     if not f_type:
-        return 1
+        return 0
 
     # if the file exists, and is an image, delete it
     os.remove(image_path)
-    return 0
+    return 1
 
 
-def parsetoJSON(information):
-    """Converts python dictionary to json. Returns 0 if error. Input is information from extract_information()"""
+def clean_up_data(information):
+    """Checks and cleans up data. Returns 0 if error. Input is information from extract_information()"""
     information["name"] = information["name"].upper()
 
     if "address" in information:
@@ -387,5 +386,6 @@ def parsetoJSON(information):
     if res == 0:
         return 0
 
-    with open("id_data.json", "w", encoding="utf-8") as f:
-        json.dump(information, f, indent=4)
+    remove_file("result_image.jpg")
+
+    return information

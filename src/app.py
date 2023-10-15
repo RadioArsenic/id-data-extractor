@@ -1,5 +1,5 @@
 import os, shutil
-from OCR.OCR import extract_information
+from OCR.OCR import extract_information, clean_up_data
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 
@@ -42,62 +42,61 @@ def extract_data():
         return jsonify({"error": "No selected file."}), 400
 
     # Extracting the selectedOption value from the request
-    state = formated_state(request.form.get("selectedOption"))
+    state = formatted_state(request.form.get("selectedOption"))
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         filepath = "./uploads/" + filename
 
-        ###################################################### To be changed with actual OCR code
-        # extractedData = extract_information(filepath, state)
-        extractedData = "error"
+        # Calls the OCR program to process the image and extract the data
+        extracted_data = extract_information(filepath, state)
 
         # deletes the images from the client after text has been extracted
         if os.path.isdir("./uploads"):
             shutil.rmtree("./uploads")
-        if extractedData == "error":
-            return jsonify({"error": "improper image please retake"}), 200
-        else:
-            # parseToJson here
-            return (
-                jsonify(
-                    {
-                        "success": "File uploaded successfully!",
-                        "filename": filename,
-                        "name": "John Doe",
-                        "birthdate": "23MAY1999",
-                        "address": "13 CHALLIS ST DICKSON ACT 2602" + state,
-                        "realdata": extractedData,  # needs to be parsed
-                    }
-                ),
-                200,
-            )
+
+        # Cleans up the data and checks validity of dates
+        extracted_data = clean_up_data(extracted_data)
+        if extracted_data == 0:
+            return jsonify({"error": "improper image please retake"}), 400
+
+        return (
+            jsonify(
+                {
+                    "success": "Information received successfully!",
+                    "name": extracted_data["name"],
+                    "address": extracted_data["address"],
+                    "expiry_date": extracted_data["expiry_date"],
+                    "date_of_birth": extracted_data["date_of_birth"],
+                }
+            ),
+            200,
+        )
     return jsonify({"error": "File type not allowed."}), 400
 
 
-def formated_state(state):
-    formated = "AUSTRALIA"
+def formatted_state(state):
+    formatted = "AUSTRALIA"
     if state == "Western Australia":
-        formated = formated + "_WA"
+        formatted = formatted + "_WA"
     elif state == "New South Wales":
-        formated = formated + "_NSW"
+        formatted = formatted + "_NSW"
     elif state == "Victoria":
-        formated = formated + "_VIC"
+        formatted = formatted + "_VIC"
     elif state == "Northern Territory":
-        formated = formated + "_NT"
+        formatted = formatted + "_NT"
     elif state == "Australian Capital Territory":
-        formated = formated + "_ACT"
+        formatted = formatted + "_ACT"
     elif state == "Southern Australia":
-        formated = formated + "_SA"
+        formatted = formatted + "_SA"
     elif state == "Tasmania":
-        formated = formated + "_TAS"
+        formatted = formatted + "_TAS"
     elif state == "Queensland":
-        formated = formated + "_QL"
+        formatted = formatted + "_QLD"
     elif state == "PASSPORT":
-        # assuming default is passport
-        pass
-    return formated
+        formatted = formatted + "_PASSPORT"
+    return formatted
 
 
 if __name__ == "__main__":
