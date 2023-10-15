@@ -71,6 +71,16 @@ class ImageConstantROI:
 
 
 def cropImageRoi(image, roi):
+    """
+    The function `cropImageRoi` takes an image and a region of interest (ROI) as input, and returns the
+    cropped image corresponding to the ROI.
+
+    :param image: The image parameter is the input image from which you want to crop a region of
+    interest (ROI)
+    :param roi: The "roi" parameter is a list or tuple containing the coordinates and dimensions of the
+    region of interest (ROI) in the image.
+    :return: the cropped region of interest (ROI) from the input image.
+    """
     roi_cropped = image[
         int(roi[1]) : int(roi[1] + roi[3]), int(roi[0]) : int(roi[0] + roi[2])
     ]
@@ -78,6 +88,13 @@ def cropImageRoi(image, roi):
 
 
 def preprocessing(image):
+    """
+    The function takes an image as input and performs various preprocessing techniques on it to make it
+    more readable by the OCR function.
+
+    :param image: The image that you want to preprocess
+    :return: the preprocessed image, which is stored in the variable "result".
+    """
     # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     gray = cv2.multiply(gray, 1.5)
@@ -104,12 +121,31 @@ def preprocessing(image):
 
 
 def displayImage(image):
+    """
+    The function `displayImage` takes an image as input and displays it in a window titled "Result
+    Image".
+
+    :param image: The parameter "image" is the image that you want to display. It should be a valid
+    image object that can be read by the OpenCV library
+    """
     cv2.imshow("Result Image", image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
 def matchImage(image, baseImage):
+    """
+    The `matchImage` function takes in an image and a base image, performs feature matching using the
+    ORB algorithm, selects the best matches, finds the homography matrix, and transforms the image to
+    have the same structure as the base image.
+
+    :param image: The image parameter is the input image that you want to match with the baseImage. It
+    should be a numpy array representing the image
+    :param baseImage: The baseImage parameter is the reference image that you want to match the input
+    image with. It should be a numpy array representing an image
+    :return: the transformed image (img_final) which has been matched to the base image using feature
+    matching and homography.
+    """
     # Declare image size, width height and chanel
     baseH, baseW, baseC = baseImage.shape
 
@@ -132,7 +168,6 @@ def matchImage(image, baseImage):
 
     # Show match img
     imgMatch = cv2.drawMatches(image, kp1, baseImage, kp, best_matches, None, flags=2)
-    displayImage(imgMatch)
 
     # Init source points and destination points for findHomography function.
     srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1, 1, 2)
@@ -144,12 +179,21 @@ def matchImage(image, baseImage):
     # Transform the image to have the same structure as the base image
     img_final = cv2.warpPerspective(image, matrix_relationship, (baseW, baseH))
 
-    displayImage(img_final)
-
     return img_final
 
 
 def extract_information(image_path, location):
+    """
+    The function `extract_information` takes an image path and location as input, loads the image,
+    resizes it, matches it with a base image based on the location, extracts information from specific
+    regions of interest (ROIs) in the image using OCR, and returns the extracted information as a
+    dictionary.
+
+    :param image_path: The path to the image file that you want to extract information from. It should be
+    a string representing the file path
+    :param location: A string that specifies the location or type of identification document.
+    :return: a dictionary containing extracted information from the image.
+    """
     information = {}
 
     # Load the image
@@ -186,7 +230,6 @@ def extract_information(image_path, location):
         data = ""
         for r in roi:
             crop_img = cropImageRoi(image, r)
-            # displayImage(crop_img)
             crop_img = preprocessing(crop_img)
             data += (
                 pytesseract.image_to_string(
@@ -196,9 +239,7 @@ def extract_information(image_path, location):
                 .strip()
                 + " "
             )
-            # displayImage(crop_img)
         information[key] = data.strip()
-        # print(f"{key} : {data.strip()}")
 
         if location == "AUSTRALIA_SA" or location == "AUSTRALIA_ACT":
             parts = information["name"].split()
@@ -208,12 +249,30 @@ def extract_information(image_path, location):
 
 
 def date_builder(day, month, year):
-    """helper function for date_formatter. Formats the date"""
+    """
+    The function `date_builder` is a helper function that formats a date by combining the day, month,
+    and year with hyphens.
+
+    :param day: The day parameter is the numerical representation of the day in the date. For example,
+    if the date is January 15th, the day parameter would be 15
+    :param month: The month parameter is the numerical representation of the month in the date. For
+    example, January would be represented by 1, February by 2, and so on
+    :param year: The year parameter is the numerical representation of the year. For example, if you
+    want to format the date as "01-01-2022", the year parameter would be 2022
+    :return: a formatted date string in the format "day-month-year".
+    """
     return f"{day}-{month}-{year}"
 
 
 def month_conversion(month):
-    """helper function for date_detection. Converts the month from letter to number format"""
+    """
+    The function `month_conversion` is a helper function that converts a month from letter format to
+    number format.
+
+    :param month: The parameter "month" is a string representing a month in letter format
+    :return: The function `month_conversion` returns the corresponding number format of the given month
+    abbreviation. If the given month is not found in the dictionary `month_dict`, it returns "00".
+    """
     month = month.upper()
     month_dict = {
         "JAN": "01",
@@ -244,8 +303,13 @@ def month_conversion(month):
 
 
 def date_formatter(text):
-    """a function to take a single date (that could be in a variety of forms) and transform
-    it into the typical dd-mm-yyyy format"""
+    """
+    The `date_formatter` function takes a single date in various formats and transforms it into the
+    dd-mm-yyyy format.
+
+    :param text: A string that represents a date in various formats
+    :return: the formatted date in the dd-mm-yyyy format.
+    """
     # todo correct dates that include O instead of 0
     # date to return
     date = ""
@@ -324,8 +388,13 @@ def date_formatter(text):
 
 
 def validate_date(date):
-    """validates an input date. returns 0 if date is invalid
-    otherwise, returns input date"""
+    """
+    The function `validate_date` takes a date as input and checks if it is a valid date, returning the
+    input date if valid or 0 if invalid.
+
+    :param date: A string representing a date in the format "dd-mm-yyyy"
+    :return:  0 if the input date is invalid, or the input date itself if it is valid.
+    """
     # retrieving parts of date
     try:
         day = int(date[:2])
@@ -352,9 +421,14 @@ def validate_date(date):
 
 
 def remove_file(image_path):
-    """removes the file with the given image name.
-    if the file is not an image, or the file does not exist, returns 0
-    otherwise, returns 1"""
+    """
+    The `remove_file` function removes a file with the given image path if it exists and is an image,
+    otherwise it returns 0.
+
+    :param image_path: The path of the image file that you want to remove
+    :return:  0 if the file does not exist or is not an image, otherwise it returns 1 if the file exists
+    and is an image and is successfully deleted.
+    """
     # if the file doesnt exist, return error
     if not os.path.exists(image_path):
         return 0
@@ -370,7 +444,13 @@ def remove_file(image_path):
 
 
 def clean_up_data(information):
-    """Checks and cleans up data. Returns 0 if error. Input is information from extract_information()"""
+    """
+    The function `clean_up_data` takes in information extracted from a document, cleans and validates
+    the data, and returns the cleaned information.
+
+    :param information: A dictionary in the format returned by extract_information()
+    :return: the cleaned up information dictionary, or 0 if an error occurred
+    """
     information["name"] = information["name"].upper()
 
     if "address" in information:
