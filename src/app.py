@@ -31,7 +31,7 @@ def extract_data():
     # checks to see whether the folder to contain file exists
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-    # check if the post request has the/a file 
+    # check if the post request has the/a file
     if "file" not in request.files:
         return jsonify({"error": "No file in the request."}), 400
 
@@ -50,7 +50,7 @@ def extract_data():
         filepath = "./uploads/" + filename
 
         ###################################################### To be changed with actual OCR code
-        #extractedData = extract_information(filepath, state)
+        # extractedData = extract_information(filepath, state)
         extractedData = "error"
 
         # deletes the images from the client after text has been extracted
