@@ -1,5 +1,5 @@
 import pytest
-from newOCR import extract_information
+from OCR import extract_information
 
 # Define a list of dictionaries, each containing an image path and its expected information
 test_data = [
