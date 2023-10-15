@@ -10,10 +10,15 @@ import os
 class ImageConstantROI:
     class CCCD(object):
         AUSTRALIA_WA = {
-            "name": [(45, 180, 155, 20), (19, 160, 120, 20)],
-            "address": [(17, 199, 300, 40)],
-            "expiry_date": [(17, 270, 140, 26)],
-            "date_of_birth": [(200, 270, 140, 26)],
+            # coordinate format in (x,y,w,h), (x,y) being the top left coordinate of the text
+            # "name": [(45, 180, 155, 20), (19, 160, 120, 20)],  # old
+            "name": [(40, 180, 160, 25), (10, 155, 130, 25)],
+            # "address": [(17, 199, 300, 40)],  # old
+            "address": [(10, 199, 300, 50)],
+            # "expiry_date": [(17, 270, 140, 26)],  # old
+            "expiry_date": [(10, 270, 160, 26)],
+            # "date_of_birth": [(200, 270, 140, 26)],  # old
+            "date_of_birth": [(200, 270, 180, 26)],
         }
         AUSTRALIA_VIC = {
             "name": [(14, 79, 350, 30)],
@@ -47,6 +52,7 @@ class ImageConstantROI:
         }
         AUSTRALIA_QLD = {
             "name": [(15, 86, 200, 25), (15, 62, 200, 25)],
+            "address": [],
             "expiry_date": [(347, 198, 75, 25)],
             "date_of_birth": [(215, 122, 120, 22)],
         }
@@ -58,6 +64,7 @@ class ImageConstantROI:
         }
         AUSTRALIA_PASSPORT = {
             "name": [(210, 130, 130, 20), (210, 110, 100, 20)],
+            "address": [],
             "expiry_date": [(210, 265, 140, 20)],
             "date_of_birth": [(210, 185, 150, 20)],
         }
@@ -153,6 +160,7 @@ def extract_information(image_path, location):
     # displayImage(resized_image)
 
     # Load the base image
+    # String formatting would be cleaner but would require the image types to be the same
     if location == "AUSTRALIA_WA":
         baseImage = cv2.imread("./test_images/WA-driver-license.jpeg")
     elif location == "AUSTRALIA_VIC":
@@ -169,14 +177,18 @@ def extract_information(image_path, location):
         baseImage = cv2.imread("./test_images/NSW-driver-license.jpg")
     elif location == "AUSTRALIA_ACT":
         baseImage = cv2.imread("./test_images/ACT-driver-license.png")
+    elif location == "AUSTRALIA_PASSPORT":
+        baseImage = cv2.imread("./test_images/AUS-passport.jpg")
 
     # Match the image with base image
-    image = matchImage(resized_image, baseImage)
+    # image = matchImage(resized_image, baseImage)
+
+    image = cv2.resize(image, (620, 413), interpolation=cv2.INTER_CUBIC)
 
     for key, roi in getattr(ImageConstantROI.CCCD, location).items():
         data = ""
         for r in roi:
-            crop_img = cropImageRoi(resized_image, r)
+            crop_img = cropImageRoi(image, r)
             # displayImage(crop_img)
             crop_img = preprocessing(crop_img)
             data += (
@@ -187,7 +199,7 @@ def extract_information(image_path, location):
                 .strip()
                 + " "
             )
-        # displayImage(crop_img)
+            # displayImage(crop_img)
         information[key] = data.strip()
         # print(f"{key} : {data.strip()}")
 
@@ -196,6 +208,7 @@ def extract_information(image_path, location):
             information["name"] = f"{' '.join(parts[1:])} {parts[0]}"
 
     return information
+    # parsetoJSON(information)
 
 
 def date_builder(day, month, year):
@@ -237,6 +250,7 @@ def month_conversion(month):
 def date_formatter(text):
     """a function to take a single date (that could be in a variety of forms) and transform
     it into the typical dd-mm-yyyy format"""
+    # todo correct dates that include O instead of 0
     # date to return
     date = ""
 
@@ -325,6 +339,7 @@ def validate_date(date):
         month == 2 or month == 4 or month == 6 or month == 9 or month == 11
     ):
         return 0
+    # todo leap years
     if (day == 30 or day == 29) and month == 2:
         return 0
     if 31 < day or day < 1:
@@ -362,17 +377,15 @@ def parsetoJSON(information):
     if "address" in information:
         information["address"] = re.sub(",", "", information["address"])
 
-    date = date_formatter(information["expiry_date"])
-    res = validate_date(date)
+    information["expiry_date"] = date_formatter(information["expiry_date"])
+    res = validate_date(information["expiry_date"])
     if res == 0:
         return 0
-    information["expiry_date"] = "".join(str(x) for x in date)
 
-    date = date_formatter(information["date_of_birth"])
-    res = validate_date(date)
+    information["date_of_birth"] = date_formatter(information["date_of_birth"])
+    res = validate_date(information["date_of_birth"])
     if res == 0:
         return 0
-    information["date_of_birth"] = "".join(str(x) for x in date)
 
     with open("id_data.json", "w", encoding="utf-8") as f:
         json.dump(information, f, indent=4)
