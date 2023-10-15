@@ -8,13 +8,19 @@ import 'dart:io';
 //late - variables are value is assigned l
 late List<CameraDescription> cameras;
 
+//global variable to hold the response from the server, variable for state
+var stringResponse;
+var selectedState;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
+  //for accepting self-signed certificates
   HttpOverrides.global = MyHttpOverrides();
-  runApp(const MyApp());
+  runApp(MaterialApp(home: StartingPage(), debugShowCheckedModeBanner: false));
 }
 
+// changing the http setting to accept our self-signed certificates
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -24,46 +30,117 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class StartingPage extends StatefulWidget {
+  @override
+  _StartingPageState createState() => _StartingPageState();
+}
 
-  // This widget is the root of your application.
+// Page with country and state selection
+class _StartingPageState extends State<StartingPage> {
+  String? CountrySelected;
+  String? stateOrPassportSelected;
+  final List<String> _options = [
+    'Australia',
+    // Add other countries in the future
+  ];
+
+  final Map<String, List<String>> _subOptions = {
+    'Australia': [
+      'Western Australia',
+      'New South Wales',
+      'Victoria',
+      'Northern Territory',
+      'Australian Capital Territory',
+      'Southern Australia',
+      'Tasmania',
+      'Queensland',
+      'PASSPORT'
+    ],
+    // Map other countries to their respective states in the future
+  };
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomeScreen(),
+    var subOptionDropdown = CountrySelected == null
+        ? Container()
+        : DropdownButton<String>(
+            value: stateOrPassportSelected,
+            items: _subOptions[CountrySelected]!.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+            hint: Text('Select a country'),
+            onChanged: (newValue) {
+              setState(() {
+                stateOrPassportSelected = newValue;
+              });
+            },
+          );
+    return Scaffold(
+      appBar: AppBar(title: Text('Select a State or passport')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            DropdownButton<String>(
+              value: CountrySelected,
+              items: _options.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              hint: Text('Select an Option'),
+              onChanged: (newValue) {
+                setState(() {
+                  CountrySelected = newValue;
+                  stateOrPassportSelected =
+                      null; // Reset the sub-option when the main option changes
+                });
+              },
+            ),
+            subOptionDropdown,
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (CountrySelected != null && stateOrPassportSelected != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => IDTakingScreen(
+                    CountrySelected: CountrySelected,
+                    stateOrPassportSelected: stateOrPassportSelected),
+              ),
+            );
+          }
+        },
+        child: Icon(Icons.arrow_forward),
+        tooltip: 'Proceed',
+      ),
     );
   }
 }
 
-//global variable to hold the response from the server, variable for state
-var stringResponse;
-var selectedState;
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class IDTakingScreen extends StatefulWidget {
+  final String? CountrySelected;
+  final String? stateOrPassportSelected;
+  const IDTakingScreen(
+      {Key? key, this.CountrySelected, this.stateOrPassportSelected})
+      : super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _IDTakingScreenState createState() => _IDTakingScreenState();
 }
 
-// code for the homescreen of the app
-class _HomeScreenState extends State<HomeScreen> {
+// IDTakingScreen of the app
+class _IDTakingScreenState extends State<IDTakingScreen> {
   late CameraController _controller;
-  String? _selectedOption = 'Western Australia'; // Moved outside of the build method
-  final List<String> _options = [
-    'Western Australia',
-    'New South Wales',
-    'Victoria',
-    'Northern Territory',
-    'Australian Capital Territory',
-    'Southern Australia',
-    'Tasmania',
-    'Queensland',
-    'PASSPORT'
-  ];
+  String? get CountrySelected => widget.CountrySelected;
+  String? get stateOrPassportSelected => widget.stateOrPassportSelected;
 
   @override
   void initState() {
@@ -83,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("OCR program")),
+      appBar: AppBar(title: const Text("Place ID within box")),
       body: Stack(
         children: [
           SizedBox(
@@ -91,26 +168,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: CameraPreview(_controller),
           ),
           Column(
+            // aligning contents to be in the middle
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              DropdownButton<String>(
-                value: _selectedOption,
-                items: _options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                hint: Text(_selectedOption ?? 'Select an Option'),
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedOption = newValue;
-                    selectedState = _selectedOption;
-                  });
-                },
-              ),
               Center(
+                // drawing of a border for potential area to take image of id
                 child: Container(
                   height: 200,
                   width: 300,
@@ -133,7 +196,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (_controller.value.isTakingPicture) {
                         return;
                       }
-                        
+
+                      // checking if a CountrySelected is selected
+                      if (stateOrPassportSelected == null) {
+                        return;
+                      }
+                      selectedState = stateOrPassportSelected;
+
                       try {
                         // the taking of a picture
                         XFile file = await _controller.takePicture();
@@ -145,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ImagePreview(file),
+                            builder: (context) => ResultPage(file),
                           ),
                         );
                       } on CameraException catch (e) {
@@ -176,8 +245,10 @@ Future<void> extractData(File imageFile) async {
     ..fields['selectedOption'] = selectedState!
     ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
+  // Sending the request and getting the response
   var streamedResponse = await request.send();
   var response = await http.Response.fromStream(streamedResponse);
+  // Decoding the JSON response
   stringResponse = jsonDecode(response.body) as Map<String, dynamic>;
 
   // messages of success/failure of request
@@ -189,42 +260,66 @@ Future<void> extractData(File imageFile) async {
 }
 
 //image viewing page of the app, app redirects to here once image taken
-class ImagePreview extends StatefulWidget {
-  ImagePreview(this.file, {super.key});
+class ResultPage extends StatefulWidget {
+  ResultPage(this.file, {super.key});
 
   // XFile contains the path property to the image
   XFile file;
   Map<String, dynamic>? jsonData;
 
   @override
-  State<ImagePreview> createState() => _ImagePreviewState();
+  State<ResultPage> createState() => _ResultPageState();
 }
 
-class _ImagePreviewState extends State<ImagePreview> {
+class _ResultPageState extends State<ResultPage> {
   @override
   Widget build(BuildContext context) {
+    // Function to build a row for each key-value pair
+    Widget _buildRow(String key, dynamic value) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              key,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            Text(
+              value.toString(),
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
     // displaying of response from the picture
     return Scaffold(
-      // "Image Preview" at the top
+      // result message printed as the title of page
       appBar: AppBar(
           title: Text(stringResponse.containsKey('error')
               ? "Poor image, please retake photo"
               : "Retake photo?")),
       body: Center(
-          // displaying of image taken
+          // displaying result of from image taken
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           // Checking if response is null before trying to access its properties
-          if (stringResponse != Null && !stringResponse.containsKey('error'))
+          if (stringResponse != null && stringResponse.containsKey('success'))
             Column(
-              children: stringResponse!.entries
-                  .map<Widget>(
-                    (entry) => Text('${entry.key}: ${entry.value}'),
-                  )
-                  .toList(),
+              children: <Widget>[
+                _buildRow('Name', stringResponse['name']),
+                _buildRow('Expiry Date', stringResponse['expiry_date']),
+                _buildRow('Date of Birth', stringResponse['date_of_birth']),
+                _buildRow('Address', stringResponse['address']),
+              ],
             )
-          else
+          else if (stringResponse.containsKey('error'))
             const Column(children: [Text(" Invalid image ")]),
         ],
       )),
