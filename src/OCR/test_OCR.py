@@ -5,6 +5,7 @@ from OCR import extract_information
 test_data = [
     {
         "image_path": "./test_images/WA-driver-license.jpeg",
+        "location": "AUSTRALIA_WA"
         "expected_information": {
             "name": "PATRICIA MARIE BECKHAM",
             "address": "66 ST GEORGES TERRACE, PERTH WA 6000",
@@ -14,6 +15,7 @@ test_data = [
     },
     {
         "image_path": "./test_images/VIC-driver-license.jpg",
+        "location": "AUSTRALIA_VIC"
         "expected_information": {
             "name": "JANE CITIZEN",
             "address": "FLAT 10 77 SAMPLE PARADE, KEW EAST VIC 3102",
@@ -23,6 +25,7 @@ test_data = [
     },
     {
         "image_path": "./test_images/NSW-driver-license.jpg",
+        "location": "AUSTRALIA_NSW"
         "expected_information": {
             "name": "JOHN DOE",
             "address": "PHOTOSHOP RD, VILLAWOOD, NSW 2163",
@@ -32,6 +35,7 @@ test_data = [
     },
     {
         "image_path": "./test_images/NT-driver-license.png",
+        "location": "AUSTRALIA_NT"
         "expected_information": {
             "name": "JANE CITIZEN",
             "address": "2 SAMPLE ST, ROADSAFETY NT 0800",
@@ -41,6 +45,7 @@ test_data = [
     },
     {
         "image_path": "./test_images/SA-driver-license.png",
+        "location": "AUSTRALIA_SA"
         "expected_information": {
             "name": "SAMUEL SAMPLE",
             "address": "1 FIRST ST",
@@ -50,6 +55,7 @@ test_data = [
     },
     {
         "image_path": "./test_images/ACT-driver-license.png",
+        "location": "AUSTRALIA_ACT"
         "expected_information": {
             "name": "JOAN CITIZEN",
             "address": "13 CHALLIS ST DICKSON ACT 2602",
@@ -59,6 +65,7 @@ test_data = [
     },
     {
         "image_path": "./test_images/QLD-driver-license.png",
+        "location": "AUSTRALIA_QLD"
         "expected_information": {
             "name": "JENNY CITIZEN",
             "address": "",
@@ -68,6 +75,7 @@ test_data = [
     },
     {
         "image_path": "./test_images/Tas-driver-license.png",
+        "location": "AUSTRALIA_TAS"
         "expected_information": {
             "name": "JOHN DAVID CITIZEN",
             "address": "5 SAMPLE ROAD TREVALLYN 7250",
@@ -77,6 +85,7 @@ test_data = [
     },
     {
         "image_path": "./test_images/AUS Passport.png",
+        "location": "AUSTRALIA_PASSPORT"
         "expected_information": {
             "name": "JOHN CITIZEN",
             "address": "",
@@ -90,9 +99,10 @@ test_data = [
 @pytest.mark.parametrize("test_entry", test_data)
 def test_extract_information(test_entry):
     image_path = test_entry["image_path"]
+    location =  test_entry["location"]
     expected_information = test_entry["expected_information"]
 
-    information = extract_information(image_path)
+    information = extract_information(image_path, location)
 
     # Make assertions to compare the extracted information with the expected values
     assert information["name"] == expected_information["name"]
