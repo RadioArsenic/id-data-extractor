@@ -1,5 +1,5 @@
 import pytest
-from OCR import extract_information
+from ocr.ocr import extract_information
 
 # Define a list of dictionaries, each containing an image path and its expected information
 test_data = [
@@ -74,7 +74,7 @@ test_data = [
         },
     },
     {
-        "image_path": "./test_images/Tas-driver-license.png",
+        "image_path": "./test_images/TAS-driver-license.png",
         "location": "AUSTRALIA_TAS"
         "expected_information": {
             "name": "JOHN DAVID CITIZEN",
@@ -84,7 +84,7 @@ test_data = [
         },
     },
     {
-        "image_path": "./test_images/AUS Passport.png",
+        "image_path": "./test_images/AUS-passport.png",
         "location": "AUSTRALIA_PASSPORT"
         "expected_information": {
             "name": "JOHN CITIZEN",

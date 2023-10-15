@@ -1,5 +1,5 @@
 import os, shutil
-from OCR.OCR import extract_information, clean_up_data
+from ocr.ocr import extract_information, clean_up_data
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 

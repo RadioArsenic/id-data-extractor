@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import pytesseract
-import json
 import re
 import imghdr
 import os
@@ -70,9 +69,9 @@ class ImageConstantROI:
         }
 
 
-def cropImageRoi(image, roi):
+def crop_image_roi(image, roi):
     """
-    The function `cropImageRoi` takes an image and a region of interest (ROI) as input, and returns the
+    The function `crop_image_roi` takes an image and a region of interest (ROI) as input, and returns the
     cropped image corresponding to the ROI.
 
     :param image: The image parameter is the input image from which you want to crop a region of
@@ -120,9 +119,9 @@ def preprocessing(image):
     return result
 
 
-def displayImage(image):
+def display_image(image):
     """
-    The function `displayImage` takes an image as input and displays it in a window titled "Result
+    The function `display_image` takes an image as input and displays it in a window titled "Result
     Image".
 
     :param image: The parameter "image" is the image that you want to display. It should be a valid
@@ -133,25 +132,25 @@ def displayImage(image):
     cv2.destroyAllWindows()
 
 
-def matchImage(image, baseImage):
+def match_image(image, base_image):
     """
-    The `matchImage` function takes in an image and a base image, performs feature matching using the
+    The `match_image` function takes in an image and a base image, performs feature matching using the
     ORB algorithm, selects the best matches, finds the homography matrix, and transforms the image to
     have the same structure as the base image.
 
-    :param image: The image parameter is the input image that you want to match with the baseImage. It
+    :param image: The image parameter is the input image that you want to match with the base_image. It
     should be a numpy array representing the image
-    :param baseImage: The baseImage parameter is the reference image that you want to match the input
-    image with. It should be a numpy array representing an image
+    :param base_image: The reference image that you want to match the input image with. It should be a
+    numpy array representing an image
     :return: the transformed image (img_final) which has been matched to the base image using feature
     matching and homography.
     """
     # Declare image size, width height and chanel
-    baseH, baseW, baseC = baseImage.shape
+    baseH, baseW, baseC = base_image.shape
 
     orb = cv2.ORB_create(1000)
 
-    kp, des = orb.detectAndCompute(baseImage, None)
+    kp, des = orb.detectAndCompute(base_image, None)
 
     PER_MATCH = 0.25
 
@@ -167,7 +166,7 @@ def matchImage(image, baseImage):
     best_matches = matches[: int(len(matches) * PER_MATCH)]
 
     # Show match img
-    imgMatch = cv2.drawMatches(image, kp1, baseImage, kp, best_matches, None, flags=2)
+    imgMatch = cv2.drawMatches(image, kp1, base_image, kp, best_matches, None, flags=2)
 
     # Init source points and destination points for findHomography function.
     srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1, 1, 2)
@@ -205,31 +204,31 @@ def extract_information(image_path, location):
     # Load the base image
     # String formatting would be cleaner but would require the image types to be the same
     if location == "AUSTRALIA_WA":
-        baseImage = cv2.imread("./test_images/WA-driver-license.jpeg")
+        base_image = cv2.imread("./test_images/WA-driver-license.jpeg")
     elif location == "AUSTRALIA_VIC":
-        baseImage = cv2.imread("./test_images/VIC-driver-license.jpg")
+        base_image = cv2.imread("./test_images/VIC-driver-license.jpg")
     elif location == "AUSTRALIA_TAS":
-        baseImage = cv2.imread("./test_images/TAS-driver-license.jpeg")
+        base_image = cv2.imread("./test_images/TAS-driver-license.jpeg")
     elif location == "AUSTRALIA_SA":
-        baseImage = cv2.imread("./test_images/SA-driver-license.png")
+        base_image = cv2.imread("./test_images/SA-driver-license.png")
     elif location == "AUSTRALIA_QLD":
-        baseImage = cv2.imread("./test_images/QLD-driver-license.jpg")
+        base_image = cv2.imread("./test_images/QLD-driver-license.jpg")
     elif location == "AUSTRALIA_NT":
-        baseImage = cv2.imread("./test_images/NT-driver-license.png")
+        base_image = cv2.imread("./test_images/NT-driver-license.png")
     elif location == "AUSTRALIA_NSW":
-        baseImage = cv2.imread("./test_images/NSW-driver-license.jpg")
+        base_image = cv2.imread("./test_images/NSW-driver-license.jpg")
     elif location == "AUSTRALIA_ACT":
-        baseImage = cv2.imread("./test_images/ACT-driver-license.png")
+        base_image = cv2.imread("./test_images/ACT-driver-license.png")
     elif location == "AUSTRALIA_PASSPORT":
-        baseImage = cv2.imread("./test_images/AUS-passport.jpg")
+        base_image = cv2.imread("./test_images/AUS-passport.jpg")
 
     # Match the image with base image
-    # image = matchImage(image, baseImage)
+    # image = match_image(image, base_image)
 
     for key, roi in getattr(ImageConstantROI.CCCD, location).items():
         data = ""
         for r in roi:
-            crop_img = cropImageRoi(image, r)
+            crop_img = crop_image_roi(image, r)
             crop_img = preprocessing(crop_img)
             data += (
                 pytesseract.image_to_string(
