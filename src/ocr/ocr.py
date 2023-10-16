@@ -169,7 +169,7 @@ def extract_information(image_path, location):
         parts = information["name"].split()
         information["name"] = f"{' '.join(parts[1:])} {parts[0]}"
 
-    return clean_up_data(information)
+    return information
 
 
 def date_builder(day, month, year):
