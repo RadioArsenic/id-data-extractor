@@ -1,5 +1,5 @@
 import pytest
-from ocr import extract_information
+from ocr import extract_information, clean_up_data
 
 # Define a list of dictionaries, each containing an image path and its expected information
 test_data = [
@@ -99,10 +99,11 @@ test_data = [
 @pytest.mark.parametrize("test_entry", test_data)
 def test_extract_information(test_entry):
     image_path = test_entry["image_path"]
-    location =  test_entry["location"]
+    location = test_entry["location"]
     expected_information = test_entry["expected_information"]
 
     information = extract_information(image_path, location)
+    information = clean_up_data(information)
 
     # Make assertions to compare the extracted information with the expected values
     assert information["name"] == expected_information["name"]
