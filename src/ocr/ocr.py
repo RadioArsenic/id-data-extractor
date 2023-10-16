@@ -25,7 +25,7 @@ class ImageConstantROI:
             "name": [(12, 80, 450, 25)],
             "address": [(12, 155, 300, 50)],
             "expiry_date": [(465, 370, 150, 20)],
-            "date_of_birth": [(280, 375, 150, 20)],
+            "date_of_birth": [(280, 370, 150, 20)],
         }
         AUSTRALIA_NT = {
             "name": [(195, 168, 300, 25), (195, 145, 300, 25)],
@@ -443,7 +443,7 @@ def clean_up_data(information):
     information["name"] = information["name"].upper()
 
     if "address" in information:
-        information["address"] = re.sub(",", "", information["address"])
+        information["address"] = re.sub(r"[,.]", "", information["address"])
 
     information["expiry_date"] = date_formatter(information["expiry_date"])
     res = validate_date(information["expiry_date"])
