@@ -32,19 +32,19 @@ class ImageConstantROI:
             "date_of_birth": [(280, 374, 150, 20)],
         }
         AUSTRALIA_NT = {
-            "name": [(195, 168, 200, 25), (195, 145, 200, 25)],
+            "name": [(195, 168, 300, 25), (195, 145, 300, 25)],
             "address": [(195, 280, 200, 50)],
             "expiry_date": [(490, 371, 90, 20)],
             "date_of_birth": [(350, 371, 90, 20)],
         }
         AUSTRALIA_ACT = {
-            "name": [(110, 107, 54, 24), (12, 107, 96, 24)],
+            "name": [(12, 100, 500, 24)],
             "address": [(11, 126, 250, 60)],
             "expiry_date": [(252, 246, 130, 30)],
             "date_of_birth": [(115, 212, 140, 30)],
         }
         AUSTRALIA_SA = {
-            "name": [(37, 209, 250, 25)],
+            "name": [(37, 209, 350, 25)],
             "address": [(16, 234, 250, 50)],
             "expiry_date": [(335, 100, 105, 30)],
             "date_of_birth": [(181, 100, 105, 30)],
@@ -180,7 +180,10 @@ def extract_information(image_path, location):
         data = ""
         for r in roi:
             crop_img = crop_image_roi(image, r)
-            crop_img = preprocessing(crop_img)
+            # Due to the lines in the background, these licences are better read without proprocessing
+            if location != "AUSTRALIA_NT" and location != "AUSTRALIA_SA":
+                crop_img = preprocessing(crop_img)
+            display_image(crop_img)
             data += (
                 pytesseract.image_to_string(
                     crop_img, config="--psm 6 --oem 3", lang="eng"
@@ -189,11 +192,12 @@ def extract_information(image_path, location):
                 .strip()
                 + " "
             )
+            print(data)
         information[key] = data.strip()
 
-        if location == "AUSTRALIA_SA" or location == "AUSTRALIA_ACT":
-            parts = information["name"].split()
-            information["name"] = f"{' '.join(parts[1:])} {parts[0]}"
+    if location == "AUSTRALIA_SA" or location == "AUSTRALIA_ACT":
+        parts = information["name"].split()
+        information["name"] = f"{' '.join(parts[1:])} {parts[0]}"
 
     return information
 
