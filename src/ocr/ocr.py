@@ -204,23 +204,23 @@ def extract_information(image_path, location):
     # Load the base image
     # String formatting would be cleaner but would require the image types to be the same
     if location == "AUSTRALIA_WA":
-        base_image = cv2.imread("./test_images/WA-driver-license.jpeg")
+        base_image = cv2.imread("./ocr/test_images/WA-driver-license.jpeg")
     elif location == "AUSTRALIA_VIC":
-        base_image = cv2.imread("./test_images/VIC-driver-license.jpg")
+        base_image = cv2.imread("./ocr/test_images/VIC-driver-license.jpg")
     elif location == "AUSTRALIA_TAS":
-        base_image = cv2.imread("./test_images/TAS-driver-license.jpeg")
+        base_image = cv2.imread("./ocr/test_images/TAS-driver-license.jpeg")
     elif location == "AUSTRALIA_SA":
-        base_image = cv2.imread("./test_images/SA-driver-license.png")
+        base_image = cv2.imread("./ocr/test_images/SA-driver-license.png")
     elif location == "AUSTRALIA_QLD":
-        base_image = cv2.imread("./test_images/QLD-driver-license.jpg")
+        base_image = cv2.imread("./ocr/test_images/QLD-driver-license.jpg")
     elif location == "AUSTRALIA_NT":
-        base_image = cv2.imread("./test_images/NT-driver-license.png")
+        base_image = cv2.imread("./ocr/test_images/NT-driver-license.png")
     elif location == "AUSTRALIA_NSW":
-        base_image = cv2.imread("./test_images/NSW-driver-license.jpg")
+        base_image = cv2.imread("./ocr/test_images/NSW-driver-license.jpg")
     elif location == "AUSTRALIA_ACT":
-        base_image = cv2.imread("./test_images/ACT-driver-license.png")
+        base_image = cv2.imread("./ocr/test_images/ACT-driver-license.png")
     elif location == "AUSTRALIA_PASSPORT":
-        base_image = cv2.imread("./test_images/AUS-passport.jpg")
+        base_image = cv2.imread("./ocr/test_images/AUS-passport.jpg")
 
     # Match the image with base image
     # image = match_image(image, base_image)

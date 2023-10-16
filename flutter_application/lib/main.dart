@@ -237,7 +237,7 @@ class _IDTakingScreenState extends State<IDTakingScreen> {
 
 Future<void> extractData(File imageFile) async {
   // The URL for the image upload, here this was the local flask app used
-  var uri = Uri.parse("https://10.0.2.2:5000/extractData");
+  var uri = Uri.parse("https://10.0.2.2:5000/extract_data");
 
   //usage of mulipart to transfer the image data
   var request = http.MultipartRequest('POST', uri)

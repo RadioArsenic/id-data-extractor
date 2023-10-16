@@ -26,7 +26,7 @@ def allowed_file(filename):
 
 
 # Receives an image from
-@app.route("/extractData", methods=["POST"])
+@app.route("/extract_data", methods=["POST"])
 def extract_data():
     # checks to see whether the folder to contain file exists
     if not os.path.exists(UPLOAD_FOLDER):
