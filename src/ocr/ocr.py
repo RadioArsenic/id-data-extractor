@@ -155,35 +155,13 @@ def extract_information(image_path, location):
     # Resize Image
     image = cv2.resize(image, (620, 413), interpolation=cv2.INTER_CUBIC)
 
-    # Load the base image
-    # String formatting would be cleaner but would require the image types to be the same
-    if location == "AUSTRALIA_WA":
-        base_image = cv2.imread("./test_images/WA-driver-license.jpeg")
-    elif location == "AUSTRALIA_VIC":
-        base_image = cv2.imread("./test_images/VIC-driver-license.jpg")
-    elif location == "AUSTRALIA_TAS":
-        base_image = cv2.imread("./test_images/TAS-driver-license.jpeg")
-    elif location == "AUSTRALIA_SA":
-        base_image = cv2.imread("./test_images/SA-driver-license.png")
-    elif location == "AUSTRALIA_QLD":
-        base_image = cv2.imread("./test_images/QLD-driver-license.jpg")
-    elif location == "AUSTRALIA_NT":
-        base_image = cv2.imread("./test_images/NT-driver-license.png")
-    elif location == "AUSTRALIA_NSW":
-        base_image = cv2.imread("./test_images/NSW-driver-license.jpg")
-    elif location == "AUSTRALIA_ACT":
-        base_image = cv2.imread("./test_images/ACT-driver-license.png")
-    elif location == "AUSTRALIA_PASSPORT":
-        base_image = cv2.imread("./test_images/AUS-passport.jpg")
-
     for key, roi in getattr(ImageConstantROI.CCCD, location).items():
         data = ""
         for r in roi:
             crop_img = crop_image_roi(image, r)
             # Due to the lines in the background, these licences are better read without proprocessing
-            if location != "AUSTRALIA_NT" and location != "AUSTRALIA_SA":
+            if location not in ["AUSTRALIA_SA", "AUSTRALIA_NT"]:
                 crop_img = preprocessing(crop_img)
-            display_image(crop_img)
             data += (
                 pytesseract.image_to_string(
                     crop_img, config="--psm 6 --oem 3", lang="eng"
