@@ -9,8 +9,8 @@ test_data = [
         "expected_information": {
             "name": "PATRICIA MARIE BECKHAM",
             "address": "66 ST GEORGES TERRACE PERTH WA 6000",
-            "expiry_date": "30 Jun 2019",
-            "date_of_birth": "01 Jul 1983",
+            "expiry_date": "30-06-2019",
+            "date_of_birth": "01-07-1983",
         },
     },
     {
@@ -28,9 +28,9 @@ test_data = [
         "location": "AUSTRALIA_NSW",
         "expected_information": {
             "name": "JOHN DOE",
-            "address": "PHOTOSHOP RD VILLAWOOD, NSW 2163",
-            "expiry_date": "25 AUG 2026",
-            "date_of_birth": "12 SEP 1988",
+            "address": "PHOTOSHOP RD VILLAWOOD NSW 2163",
+            "expiry_date": "25-08-2026",
+            "date_of_birth": "12-09-1988",
         },
     },
     {
@@ -39,8 +39,8 @@ test_data = [
         "expected_information": {
             "name": "JANE CITIZEN",
             "address": "2 SAMPLE ST ROADSAFETY NT 0800",
-            "expiry_date": "01/06/2026",
-            "date_of_birth": "25/12/1999",
+            "expiry_date": "01-06-2026",
+            "date_of_birth": "25-12-1999",
         },
     },
     {
@@ -49,18 +49,18 @@ test_data = [
         "expected_information": {
             "name": "SAMUEL SAMPLE",
             "address": "1 FIRST ST",
-            "expiry_date": "13/09/2014",
-            "date_of_birth": "14/09/1995",
+            "expiry_date": "13-09-2014",
+            "date_of_birth": "14-09-1995",
         },
     },
     {
         "image_path": "./test_images/ACT-driver-license.png",
         "location": "AUSTRALIA_ACT",
         "expected_information": {
-            "name": "Joan CITIZEN",
+            "name": "JOAN CITIZEN",
             "address": "13 CHALLIS ST DICKSON ACT 2602",
-            "expiry_date": "10JUN2011",
-            "date_of_birth": "27MAY1984",
+            "expiry_date": "10-06-2011",
+            "date_of_birth": "27-05-1984",
         },
     },
     {
@@ -69,8 +69,8 @@ test_data = [
         "expected_information": {
             "name": "JENNY CITIZEN",
             "address": "",
-            "expiry_date": "29.08.15",
-            "date_of_birth": "28 Sept 1970",
+            "expiry_date": "29-08-2015",
+            "date_of_birth": "28-09-1970",
         },
     },
     {
@@ -79,8 +79,8 @@ test_data = [
         "expected_information": {
             "name": "JOHN DAVID CITIZEN",
             "address": "5 SAMPLE ROAD TREVALLYN 7250",
-            "expiry_date": "03 JAN 2020",
-            "date_of_birth": "07 JUN 1965",
+            "expiry_date": "03-01-2020",
+            "date_of_birth": "07-06-1965",
         },
     },
     {
@@ -89,8 +89,8 @@ test_data = [
         "expected_information": {
             "name": "JOHN CITIZEN",
             "address": "",
-            "expiry_date": "18 AUG 2015",
-            "date_of_birth": "12 JUN 1979",
+            "expiry_date": "18-08-2015",
+            "date_of_birth": "12-06-1979",
         },
     },
 ]
