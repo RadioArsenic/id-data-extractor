@@ -56,7 +56,7 @@ class ImageConstantROI:
             "date_of_birth": [(215, 122, 120, 22)],
         }
         AUSTRALIA_TAS = {
-            "name": [(230, 95, 140, 25), (230, 70, 90, 20)],
+            "name": [(230, 95, 140, 25), (230, 70, 90, 25)],
             "address": [(230, 125, 170, 55)],
             "expiry_date": [(365, 280, 85, 15)],
             "date_of_birth": [(400, 220, 210, 30)],
