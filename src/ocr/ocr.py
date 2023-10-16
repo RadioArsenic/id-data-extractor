@@ -50,7 +50,7 @@ class ImageConstantROI:
             "date_of_birth": [(181, 100, 105, 30)],
         }
         AUSTRALIA_QLD = {
-            "name": [(15, 86, 200, 25), (15, 62, 200, 25)],
+            "name": [(15, 86, 300, 25), (15, 62, 300, 25)],
             "address": [],
             "expiry_date": [(347, 198, 75, 25)],
             "date_of_birth": [(215, 122, 120, 22)],
@@ -170,7 +170,6 @@ def extract_information(image_path, location):
                 .strip()
                 + " "
             )
-            print(data)
         information[key] = data.strip()
 
     if location == "AUSTRALIA_SA" or location == "AUSTRALIA_ACT":
@@ -290,6 +289,8 @@ def date_formatter(text):
     # regex patterns
     pattern8 = r"\b\d{8}\b"  # 10061990
 
+    patternSDot = r"[0-9]{2}.[0-9]{2}.[0-9]{2}"  # 10.06.15
+
     pattern3L = r"\d{2}[A-Za-z]{3}\d{4}"  # 10JUN1990
     pattern4L = r"\d{2}[A-Za-z]{4}\d{4}"  # 10SEPT1990
 
@@ -313,6 +314,13 @@ def date_formatter(text):
     if len(matches_8) > 0:
         i = matches_8[0]
         date = date_builder(i[:2], i[2:4], i[4:])
+
+    # dd.mm.yy
+    matches_SDoT = re.findall(patternSDot, text)
+    if len(matches_SDoT) > 0:
+        i = matches_SDoT[0]
+        year = f"20{i[6:]}"
+        date = date_builder(i[:2], i[3:5], year)
 
     # ddMMMyyyy
     matches_3m = re.findall(pattern3L, text)
