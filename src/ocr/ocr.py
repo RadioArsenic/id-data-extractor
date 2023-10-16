@@ -132,55 +132,6 @@ def display_image(image):
     cv2.destroyAllWindows()
 
 
-def match_image(image, base_image):
-    """
-    The `match_image` function takes in an image and a base image, performs feature matching using the
-    ORB algorithm, selects the best matches, finds the homography matrix, and transforms the image to
-    have the same structure as the base image.
-
-    :param image: The image parameter is the input image that you want to match with the base_image. It
-    should be a numpy array representing the image
-    :param base_image: The reference image that you want to match the input image with. It should be a
-    numpy array representing an image
-    :return: the transformed image (img_final) which has been matched to the base image using feature
-    matching and homography.
-    """
-    # Declare image size, width height and chanel
-    baseH, baseW, baseC = base_image.shape
-
-    orb = cv2.ORB_create(1000)
-
-    kp, des = orb.detectAndCompute(base_image, None)
-
-    PER_MATCH = 0.25
-
-    # Detect keypoint on image
-    kp1, des1 = orb.detectAndCompute(image, None)
-
-    # Init BF Matcher, find the matches points of two images
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING)
-    matches = list(bf.match(des1, des))
-
-    # Select top 30% best matcher
-    matches.sort(key=lambda x: x.distance)
-    best_matches = matches[: int(len(matches) * PER_MATCH)]
-
-    # Show match img
-    imgMatch = cv2.drawMatches(image, kp1, base_image, kp, best_matches, None, flags=2)
-
-    # Init source points and destination points for findHomography function.
-    srcPoints = np.float32([kp1[m.queryIdx].pt for m in best_matches]).reshape(-1, 1, 2)
-    dstPoints = np.float32([kp[m.trainIdx].pt for m in best_matches]).reshape(-1, 1, 2)
-
-    # Find Homography of two images
-    matrix_relationship, _ = cv2.findHomography(srcPoints, dstPoints, cv2.RANSAC, 5.0)
-
-    # Transform the image to have the same structure as the base image
-    img_final = cv2.warpPerspective(image, matrix_relationship, (baseW, baseH))
-
-    return img_final
-
-
 def extract_information(image_path, location):
     """
     The function `extract_information` takes an image path and location as input, loads the image,
@@ -222,9 +173,6 @@ def extract_information(image_path, location):
     elif location == "AUSTRALIA_PASSPORT":
         base_image = cv2.imread("./ocr/test_images/AUS-passport.jpg")
 
-    # Match the image with base image
-    # image = match_image(image, base_image)
-
     for key, roi in getattr(ImageConstantROI.CCCD, location).items():
         data = ""
         for r in roi:
@@ -264,7 +212,7 @@ def date_builder(day, month, year):
 
 def adjust_zeros(date):
     """
-    the `adjust_zeros` function replaces any 0s or Os that have been incorrectly detected by the OCR program. 
+    the `adjust_zeros` function replaces any 0s or Os that have been incorrectly detected by the OCR program.
     :param date: a string that represents a date in various formats
     :return: the same date with any incorrect 0s and Os replaced
     """
@@ -272,17 +220,29 @@ def adjust_zeros(date):
     # transforming to uppercase
     date = date.upper()
 
-    # for each accepted date layout, replace Os and 0s 
+    # for each accepted date layout, replace Os and 0s
     if length == 8:
-        formatted_date = date.replace('O', '0')
+        formatted_date = date.replace("O", "0")
     elif length == 9:
-        formatted_date = date[:2].replace('O', '0') + date[2:5].replace('0', 'O') + date[5:].replace('O', '0')
+        formatted_date = (
+            date[:2].replace("O", "0")
+            + date[2:5].replace("0", "O")
+            + date[5:].replace("O", "0")
+        )
     elif length == 10:
-        formatted_date = date.replace('O', '0')
+        formatted_date = date.replace("O", "0")
     elif length == 11:
-        formatted_date = date[:2].replace('O', '0') + date[2:7].replace('0', 'O') + date[7:].replace('O', '0')
+        formatted_date = (
+            date[:2].replace("O", "0")
+            + date[2:7].replace("0", "O")
+            + date[7:].replace("O", "0")
+        )
     elif length == 12:
-        formatted_date = date[:2].replace('O', '0') + date[2:8].replace('0', 'O') + date[8:].replace('O', '0')
+        formatted_date = (
+            date[:2].replace("O", "0")
+            + date[2:8].replace("0", "O")
+            + date[8:].replace("O", "0")
+        )
     # the date is not in an accepted format
     else:
         return 0
@@ -336,7 +296,6 @@ def date_formatter(text):
     :param text: A string that represents a date in various formats
     :return: the formatted date in the dd-mm-yyyy format.
     """
-    # todo correct dates that include O instead of 0
     # date to return
     date = ""
 
@@ -454,7 +413,7 @@ def validate_date(date):
     # if the year is invalid
     if year < 1900 or year > 2100:
         return 0
-    # else, date is valid 
+    # else, date is valid
     else:
         return date
 
