@@ -432,19 +432,29 @@ def validate_date(date):
     except:
         return 0
     # checking date is valid
+    # if the month has under 31 days
     if day == 31 and (
         month == 2 or month == 4 or month == 6 or month == 9 or month == 11
     ):
         return 0
-    # todo leap years
-    if (day == 30 or day == 29) and month == 2:
-        return 0
+    # if the month is feb
+    if month == 2:
+        if day == 30:
+            return 0
+        # checking for leap year
+        if day == 29:
+            if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0) == False:
+                return 0
+    # if the day is invalid
     if 31 < day or day < 1:
         return 0
+    # if the month is invalid
     if 13 < month or month < 1:
         return 0
+    # if the year is invalid
     if year < 1900 or year > 2100:
         return 0
+    # else, date is valid 
     else:
         return date
 
