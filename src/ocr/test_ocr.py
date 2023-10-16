@@ -64,7 +64,7 @@ test_data = [
         },
     },
     {
-        "image_path": "./test_images/QLD-driver-license.png",
+        "image_path": "./test_images/QLD-driver-license.jpg",
         "location": "AUSTRALIA_QLD",
         "expected_information": {
             "name": "JENNY CITIZEN",
@@ -74,7 +74,7 @@ test_data = [
         },
     },
     {
-        "image_path": "./test_images/TAS-driver-license.png",
+        "image_path": "./test_images/TAS-driver-license.jpg",
         "location": "AUSTRALIA_TAS",
         "expected_information": {
             "name": "JOHN DAVID CITIZEN",
