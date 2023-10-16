@@ -22,10 +22,10 @@ class ImageConstantROI:
             "date_of_birth": [(217, 230, 150, 30)],
         }
         AUSTRALIA_NSW = {
-            "name": [(12, 110, 450, 25)],
-            "address": [(12, 175, 250, 50)],
-            "expiry_date": [(465, 374, 150, 20)],
-            "date_of_birth": [(280, 374, 150, 20)],
+            "name": [(12, 80, 450, 25)],
+            "address": [(12, 155, 300, 50)],
+            "expiry_date": [(465, 370, 150, 20)],
+            "date_of_birth": [(280, 375, 150, 20)],
         }
         AUSTRALIA_NT = {
             "name": [(195, 168, 300, 25), (195, 145, 300, 25)],
@@ -52,7 +52,7 @@ class ImageConstantROI:
             "date_of_birth": [(215, 122, 120, 22)],
         }
         AUSTRALIA_TAS = {
-            "name": [(230, 95, 300, 25), (230, 70, 300, 20)],
+            "name": [(230, 95, 300, 25), (230, 70, 300, 25)],
             "address": [(230, 125, 170, 55)],
             "expiry_date": [(365, 280, 85, 15)],
             "date_of_birth": [(400, 220, 210, 30)],
