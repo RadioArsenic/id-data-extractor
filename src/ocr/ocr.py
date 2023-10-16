@@ -11,7 +11,7 @@ class ImageConstantROI:
         AUSTRALIA_WA = {
             # coordinate format in (x,y,w,h), (x,y) being the top left coordinate of the text
             # "name": [(45, 180, 155, 20), (19, 160, 120, 20)],  # old
-            "name": [(40, 180, 160, 25), (10, 155, 130, 25)],
+            "name": [(40, 180, 300, 23), (10, 155, 300, 25)],
             # "address": [(17, 199, 300, 40)],  # old
             "address": [(10, 199, 300, 50)],
             # "expiry_date": [(17, 270, 140, 26)],  # old
@@ -62,10 +62,13 @@ class ImageConstantROI:
             "date_of_birth": [(400, 220, 210, 30)],
         }
         AUSTRALIA_PASSPORT = {
-            "name": [(210, 130, 130, 20), (210, 110, 100, 20)],
+            "name": [(210, 130, 130, 20), (210, 110, 100, 20)],  # old
+            # "name": [(200, 120, 200, 40), (200, 100, 200, 40)],
             "address": [],
-            "expiry_date": [(210, 265, 140, 20)],
-            "date_of_birth": [(210, 185, 150, 20)],
+            "expiry_date": [(210, 265, 140, 20)],  # old
+            # "expiry_date": [(200, 265, 200, 30)],
+            "date_of_birth": [(210, 185, 150, 20)],  # old
+            # "date_of_birth": [(200, 180, 200, 30)],
         }
 
 
@@ -155,23 +158,23 @@ def extract_information(image_path, location):
     # Load the base image
     # String formatting would be cleaner but would require the image types to be the same
     if location == "AUSTRALIA_WA":
-        base_image = cv2.imread("./ocr/test_images/WA-driver-license.jpeg")
+        base_image = cv2.imread("./test_images/WA-driver-license.jpeg")
     elif location == "AUSTRALIA_VIC":
-        base_image = cv2.imread("./ocr/test_images/VIC-driver-license.jpg")
+        base_image = cv2.imread("./test_images/VIC-driver-license.jpg")
     elif location == "AUSTRALIA_TAS":
-        base_image = cv2.imread("./ocr/test_images/TAS-driver-license.jpeg")
+        base_image = cv2.imread("./test_images/TAS-driver-license.jpeg")
     elif location == "AUSTRALIA_SA":
-        base_image = cv2.imread("./ocr/test_images/SA-driver-license.png")
+        base_image = cv2.imread("./test_images/SA-driver-license.png")
     elif location == "AUSTRALIA_QLD":
-        base_image = cv2.imread("./ocr/test_images/QLD-driver-license.jpg")
+        base_image = cv2.imread("./test_images/QLD-driver-license.jpg")
     elif location == "AUSTRALIA_NT":
-        base_image = cv2.imread("./ocr/test_images/NT-driver-license.png")
+        base_image = cv2.imread("./test_images/NT-driver-license.png")
     elif location == "AUSTRALIA_NSW":
-        base_image = cv2.imread("./ocr/test_images/NSW-driver-license.jpg")
+        base_image = cv2.imread("./test_images/NSW-driver-license.jpg")
     elif location == "AUSTRALIA_ACT":
-        base_image = cv2.imread("./ocr/test_images/ACT-driver-license.png")
+        base_image = cv2.imread("./test_images/ACT-driver-license.png")
     elif location == "AUSTRALIA_PASSPORT":
-        base_image = cv2.imread("./ocr/test_images/AUS-passport.jpg")
+        base_image = cv2.imread("./test_images/AUS-passport.jpg")
 
     for key, roi in getattr(ImageConstantROI.CCCD, location).items():
         data = ""
@@ -212,8 +215,8 @@ def date_builder(day, month, year):
 
 def adjust_zeros(date):
     """
-    the `adjust_zeros` function replaces any 0s or Os that have been incorrectly detected by the OCR program.
-    :param date: a string that represents a date in various formats
+    The `adjust_zeros` function replaces any 0s or Os that have been incorrectly detected by the OCR program.
+    :param date: A string that represents a date in various formats
     :return: the same date with any incorrect 0s and Os replaced
     """
     length = len(date)
@@ -449,6 +452,8 @@ def clean_up_data(information):
     :param information: A dictionary in the format returned by extract_information()
     :return: the cleaned up information dictionary, or 0 if an error occurred
     """
+    remove_file("result_image.jpg")
+
     information["name"] = information["name"].upper()
 
     if "address" in information:
@@ -463,7 +468,5 @@ def clean_up_data(information):
     res = validate_date(information["date_of_birth"])
     if res == 0:
         return 0
-
-    remove_file("result_image.jpg")
 
     return information
