@@ -16,30 +16,54 @@ VALID_API_KEYS = ["JPkxhc9cGFv35OWu267fsx8R6uZj29GL"]
 # Security check for user whether contain api key
 @app.before_request
 def check_api_key():
+    """
+    The function and api call `extract_data` takes in the http POST request with an image file. 
+    This image file goes through the extracted_data() function to retrieve the ID details, which is
+    then formated and send back through a JSON object
+
+    :param (headers) information: Header "selectedOption" containing state and image binary in the body
+    :return: formated string, or 0 if an error occurred
+    """
     api_key = request.headers.get("x-api-key")
     if api_key is None or api_key not in VALID_API_KEYS:
         return jsonify(error="Missing or invalid API key."), 403
 
 
 def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    """
+    The function `allowed_file()` checks for whether the image file coming in is the allowed image types
+
+    :param information: the name of the image file
+    :return: 1 if file type is acceptable, 0 if file type is not 
+    """
+    if("." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS):
+        return 1
+    return 0
 
 
 # Receives an image from
 @app.route("/extract_data", methods=["POST"])
 def extract_data():
+    """
+    The function and api call `extract_data` takes in the http POST request with an image file. 
+    This image file goes through the extracted_data() function to retrieve the ID details, which is
+    then formated and send back through a JSON object
+
+    :param (headers) information: Header "selectedOption" containing state and image binary in the body
+    :return: formated string, or 0 if an error occurred
+    """
     # checks to see whether the folder to contain file exists
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
-    # check if the post request has the/a file
-    if "file" not in request.files:
-        return jsonify({"error": "No file in the request."}), 400
-
-    # file name has to be "file" in order for it to work
-    file = request.files["file"]
-
+    # check if the post request has File type with key value :"ID_image"
+    if "ID_image" not in request.files:
+        print(request.files)
+        return jsonify({"error": "No File with appropriate key value for extraction"}), 400
+    
+    #retrieves the value of key "ID_image"
+    file = request.files["ID_image"]
     if file.filename == "":
-        return jsonify({"error": "No selected file."}), 400
+        return jsonify({"error": "No image content in file of request"}), 400
 
     # Extracting the selectedOption value from the request
     state = formatted_state(request.form.get("selectedOption"))
@@ -77,6 +101,13 @@ def extract_data():
 
 
 def formatted_state(state):
+    """
+    The function `formatted_state` takes in the state selected from the flutter app and 
+    formats it to approprate format for ocr program.
+
+    :param information: A string from the flutter app of the state chose in a presentable format
+    :return: formated string, or 0 if an error occurred
+    """
     formatted = "AUSTRALIA"
     if state == "Western Australia":
         formatted = formatted + "_WA"
@@ -96,6 +127,8 @@ def formatted_state(state):
         formatted = formatted + "_QLD"
     elif state == "PASSPORT":
         formatted = formatted + "_PASSPORT"
+    if formatted == "AUSTRALIA":
+        return 0
     return formatted
 
 
