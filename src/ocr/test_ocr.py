@@ -9,8 +9,8 @@ test_data = [
         "expected_information": {
             "name": "PATRICIA MARIE BECKHAM",
             "address": "66 ST GEORGES TERRACE, PERTH WA 6000",
-            "expiry_date": "30 JUN 2019",
-            "date_of_birth": "1 JUL 1983",
+            "expiry_date": "30 Jun 2019",
+            "date_of_birth": "1 Jul 1983",
         },
     },
     {
