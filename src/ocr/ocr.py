@@ -23,7 +23,7 @@ class ImageConstantROI:
         }
         AUSTRALIA_NSW = {
             "name": [(12, 78, 450, 25)],
-            "address": [(12, 151, 300, 50)],
+            "address": [(12, 151, 250, 50)],
             "expiry_date": [(467, 371, 150, 20)],
             "date_of_birth": [(283, 371, 150, 20)],
         }
@@ -58,13 +58,10 @@ class ImageConstantROI:
             "date_of_birth": [(400, 220, 210, 30)],
         }
         AUSTRALIA_PASSPORT = {
-            "name": [(210, 130, 300, 20), (210, 110, 300, 20)],  # old
-            # "name": [(200, 120, 300, 40), (200, 100, 300, 40)],
+            "name": [(205, 112, 125, 20), (205, 84, 125, 20)],
             "address": [],
-            "expiry_date": [(210, 265, 140, 20)],  # old
-            # "expiry_date": [(200, 265, 200, 30)],
-            "date_of_birth": [(210, 185, 150, 20)],  # old
-            # "date_of_birth": [(200, 180, 200, 30)],
+            "expiry_date": [(205, 257, 125, 20)],
+            "date_of_birth": [(205, 170, 125, 20)],
         }
 
 

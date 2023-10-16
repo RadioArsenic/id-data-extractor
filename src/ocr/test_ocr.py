@@ -87,10 +87,10 @@ test_data = [
         "image_path": "./test_images/AUS-passport.jpg",
         "location": "AUSTRALIA_PASSPORT",
         "expected_information": {
-            "name": "JOHN CITIZEN",
+            "name": "JANE CITIZEN",
             "address": "",
-            "expiry_date": "18-08-2015",
-            "date_of_birth": "12-06-1979",
+            "expiry_date": "01-08-2032",
+            "date_of_birth": "04-05-1991",
         },
     },
 ]
