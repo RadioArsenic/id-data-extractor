@@ -262,6 +262,34 @@ def date_builder(day, month, year):
     return f"{day}-{month}-{year}"
 
 
+def adjust_zeros(date):
+    """
+    the `adjust_zeros` function replaces any 0s or Os that have been incorrectly detected by the OCR program. 
+    :param date: a string that represents a date in various formats
+    :return: the same date with any incorrect 0s and Os replaced
+    """
+    length = len(date)
+    # transforming to uppercase
+    date = date.upper()
+
+    # for each accepted date layout, replace Os and 0s 
+    if length == 8:
+        formatted_date = date.replace('O', '0')
+    elif length == 9:
+        formatted_date = date[:2].replace('O', '0') + date[2:5].replace('0', 'O') + date[5:].replace('O', '0')
+    elif length == 10:
+        formatted_date = date.replace('O', '0')
+    elif length == 11:
+        formatted_date = date[:2].replace('O', '0') + date[2:7].replace('0', 'O') + date[7:].replace('O', '0')
+    elif length == 12:
+        formatted_date = date[:2].replace('O', '0') + date[2:8].replace('0', 'O') + date[8:].replace('O', '0')
+    # the date is not in an accepted format
+    else:
+        return 0
+
+    return formatted_date
+
+
 def month_conversion(month):
     """
     The function `month_conversion` is a helper function that converts a month from letter format to
@@ -311,6 +339,9 @@ def date_formatter(text):
     # todo correct dates that include O instead of 0
     # date to return
     date = ""
+
+    # replacing incorrect 0s and Os
+    text = adjust_zeros(text)
 
     # regex patterns
     pattern8 = r"\b\d{8}\b"  # 10061990
