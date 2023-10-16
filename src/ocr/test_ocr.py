@@ -10,7 +10,7 @@ test_data = [
             "name": "PATRICIA MARIE BECKHAM",
             "address": "66 ST GEORGES TERRACE PERTH WA 6000",
             "expiry_date": "30 Jun 2019",
-            "date_of_birth": "1 Jul 1983",
+            "date_of_birth": "01 Jul 1983",
         },
     },
     {
@@ -57,7 +57,7 @@ test_data = [
         "image_path": "./test_images/ACT-driver-license.png",
         "location": "AUSTRALIA_ACT",
         "expected_information": {
-            "name": "JOAN CITIZEN",
+            "name": "Joan CITIZEN",
             "address": "13 CHALLIS ST DICKSON ACT 2602",
             "expiry_date": "10JUN2011",
             "date_of_birth": "27MAY1984",
@@ -70,7 +70,7 @@ test_data = [
             "name": "JENNY CITIZEN",
             "address": "",
             "expiry_date": "29.08.15",
-            "date_of_birth": "28 SEPT 1970",
+            "date_of_birth": "28 Sept 1970",
         },
     },
     {
