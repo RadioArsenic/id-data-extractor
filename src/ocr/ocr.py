@@ -10,23 +10,19 @@ class ImageConstantROI:
     class CCCD(object):
         AUSTRALIA_WA = {
             # coordinate format in (x,y,w,h), (x,y) being the top left coordinate of the text
-            # "name": [(45, 180, 155, 20), (19, 160, 120, 20)],  # old
             "name": [(40, 180, 300, 23), (10, 155, 300, 25)],
-            # "address": [(17, 199, 300, 40)],  # old
             "address": [(10, 199, 300, 50)],
-            # "expiry_date": [(17, 270, 140, 26)],  # old
             "expiry_date": [(10, 270, 160, 26)],
-            # "date_of_birth": [(200, 270, 140, 26)],  # old
             "date_of_birth": [(200, 270, 180, 26)],
         }
         AUSTRALIA_VIC = {
-            "name": [(14, 79, 350, 30)],
+            "name": [(14, 79, 450, 30)],
             "address": [(14, 128, 350, 90)],
             "expiry_date": [(14, 230, 150, 30)],
             "date_of_birth": [(217, 230, 150, 30)],
         }
         AUSTRALIA_NSW = {
-            "name": [(12, 110, 250, 25)],
+            "name": [(12, 110, 450, 25)],
             "address": [(12, 175, 250, 50)],
             "expiry_date": [(465, 374, 150, 20)],
             "date_of_birth": [(280, 374, 150, 20)],
@@ -38,13 +34,13 @@ class ImageConstantROI:
             "date_of_birth": [(350, 371, 90, 20)],
         }
         AUSTRALIA_ACT = {
-            "name": [(12, 100, 500, 24)],
+            "name": [(12, 100, 450, 24)],
             "address": [(11, 126, 250, 60)],
             "expiry_date": [(252, 246, 130, 30)],
             "date_of_birth": [(115, 212, 140, 30)],
         }
         AUSTRALIA_SA = {
-            "name": [(37, 209, 350, 25)],
+            "name": [(37, 209, 450, 25)],
             "address": [(16, 234, 250, 50)],
             "expiry_date": [(335, 100, 105, 30)],
             "date_of_birth": [(181, 100, 105, 30)],
@@ -56,14 +52,14 @@ class ImageConstantROI:
             "date_of_birth": [(215, 122, 120, 22)],
         }
         AUSTRALIA_TAS = {
-            "name": [(230, 95, 140, 25), (230, 70, 90, 20)],
+            "name": [(230, 95, 300, 25), (230, 70, 300, 20)],
             "address": [(230, 125, 170, 55)],
             "expiry_date": [(365, 280, 85, 15)],
             "date_of_birth": [(400, 220, 210, 30)],
         }
         AUSTRALIA_PASSPORT = {
-            "name": [(210, 130, 130, 20), (210, 110, 100, 20)],  # old
-            # "name": [(200, 120, 200, 40), (200, 100, 200, 40)],
+            "name": [(210, 130, 300, 20), (210, 110, 300, 20)],  # old
+            # "name": [(200, 120, 300, 40), (200, 100, 300, 40)],
             "address": [],
             "expiry_date": [(210, 265, 140, 20)],  # old
             # "expiry_date": [(200, 265, 200, 30)],
