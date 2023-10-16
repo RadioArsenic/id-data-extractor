@@ -8,9 +8,9 @@ test_data = [
         "location": "AUSTRALIA_WA",
         "expected_information": {
             "name": "PATRICIA MARIE BECKHAM",
-            "address": "66 ST GEORGES TERRACE, PERTH WA 6000",
-            "expiry_date": "30 JUN 2019",
-            "date_of_birth": "1 JUL 1983",
+            "address": "66 ST GEORGES TERRACE PERTH WA 6000",
+            "expiry_date": "30 Jun 2019",
+            "date_of_birth": "1 Jul 1983",
         },
     },
     {
@@ -18,7 +18,7 @@ test_data = [
         "location": "AUSTRALIA_VIC",
         "expected_information": {
             "name": "JANE CITIZEN",
-            "address": "FLAT 10 77 SAMPLE PARADE, KEW EAST VIC 3102",
+            "address": "FLAT 10 77 SAMPLE PARADE KEW EAST VIC 3102",
             "expiry_date": "20-05-2019",
             "date_of_birth": "29-07-1983",
         },
@@ -28,7 +28,7 @@ test_data = [
         "location": "AUSTRALIA_NSW",
         "expected_information": {
             "name": "JOHN DOE",
-            "address": "PHOTOSHOP RD, VILLAWOOD, NSW 2163",
+            "address": "PHOTOSHOP RD VILLAWOOD, NSW 2163",
             "expiry_date": "25 AUG 2026",
             "date_of_birth": "12 SEP 1988",
         },
@@ -38,7 +38,7 @@ test_data = [
         "location": "AUSTRALIA_NT",
         "expected_information": {
             "name": "JANE CITIZEN",
-            "address": "2 SAMPLE ST, ROADSAFETY NT 0800",
+            "address": "2 SAMPLE ST ROADSAFETY NT 0800",
             "expiry_date": "01/06/2026",
             "date_of_birth": "25/12/1999",
         },
