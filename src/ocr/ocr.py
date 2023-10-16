@@ -58,13 +58,10 @@ class ImageConstantROI:
             "date_of_birth": [(400, 220, 210, 30)],
         }
         AUSTRALIA_PASSPORT = {
-            "name": [(210, 130, 300, 20), (210, 110, 300, 20)],  # old
-            # "name": [(200, 120, 300, 40), (200, 100, 300, 40)],
+            "name": [(210, 130, 300, 20), (210, 110, 300, 25)],
             "address": [],
-            "expiry_date": [(210, 265, 140, 20)],  # old
-            # "expiry_date": [(200, 265, 200, 30)],
-            "date_of_birth": [(210, 185, 150, 20)],  # old
-            # "date_of_birth": [(200, 180, 200, 30)],
+            "expiry_date": [(200, 265, 150, 25)],
+            "date_of_birth": [(200, 180, 150, 25)],
         }
 
 
