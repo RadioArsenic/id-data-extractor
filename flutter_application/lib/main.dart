@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'dart:io';
@@ -235,15 +237,29 @@ class _IDTakingScreenState extends State<IDTakingScreen> {
   }
 }
 
+//For the purpose of using images from the assets folder to send over https
+Future<Uint8List> _loadImageAsset(String path) async {
+  // Load the image as bytes
+  ByteData data = await rootBundle.load(path);
+  return data.buffer.asUint8List();
+}
+
 Future<void> extractData(File imageFile) async {
   // The URL for the image upload, here this was the local flask app used
   var uri = Uri.parse("https://10.0.2.2:5000/extract_data");
 
   //usage of mulipart to transfer the image data
+  // var request = http.MultipartRequest('POST', uri)
+  //   ..headers['x-api-key'] = 'JPkxhc9cGFv35OWu267fsx8R6uZj29GL'
+  //   ..fields['selectedOption'] = selectedState!
+  //   ..files.add(await http.MultipartFile.fromPath('ID_image', imageFile.path));
+
+  // FOR DEMO PURPOSES - using image from assets
+  Uint8List imageBytes = await _loadImageAsset("assets/WA-driver-license.jpeg");  
   var request = http.MultipartRequest('POST', uri)
     ..headers['x-api-key'] = 'JPkxhc9cGFv35OWu267fsx8R6uZj29GL'
     ..fields['selectedOption'] = selectedState!
-    ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+    ..files.add(await http.MultipartFile.fromBytes('ID_image', imageBytes,filename: "Id.jpeg"));
 
   // Sending the request and getting the response
   var streamedResponse = await request.send();

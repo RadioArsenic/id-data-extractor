@@ -103,7 +103,7 @@ def test_extract_information(test_entry):
     expected_information = test_entry["expected_information"]
 
     information = extract_information(image_path, location)
-    information = clean_up_data(information)
+    # information = clean_up_data(information)
 
     # Make assertions to compare the extracted information with the expected values
     assert information["name"] == expected_information["name"]
